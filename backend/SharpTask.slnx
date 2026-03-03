@@ -1,0 +1,6 @@
+<Solution>
+  <Project Path="SharpTask.API/SharpTask.API.csproj" />
+  <Project Path="SharpTask.Application/SharpTask.Application.csproj" />
+  <Project Path="SharpTask.Domain/SharpTask.Domain.csproj" />
+  <Project Path="SharpTask.Infrastructure/SharpTask.Infrastructure.csproj" />
+</Solution>
