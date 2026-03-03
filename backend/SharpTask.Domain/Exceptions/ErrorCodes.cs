@@ -1,12 +1,12 @@
-namespace App.Entities.Exceptions;
+namespace SharpTask.Domain.Exceptions;
 
 public static class ErrorCodes
 {
-    // Errores relacionados con las mascostas
-    public const string PetNotFound = "PET_NOT_FOUND";
+    // Errores de tareas
+    public const string TaskNotFound = "TASK_NOT_FOUND";
 
-    // Errores relacionados con el perfil
-    public const string ProfileNotFound = "PROFILE_NOT_FOUND";
+    // Errores de notas
+    public const string NoteNotFound = "NOTE_NOT_FOUND";
 
     // Errores generales
     public const string InternalError = "INTERNAL_SERVER_ERROR";

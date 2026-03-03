@@ -1,4 +1,4 @@
-namespace App.Entities.Exceptions;
+namespace SharpTask.Domain.Exceptions;
 
 public class AppException : Exception
 {

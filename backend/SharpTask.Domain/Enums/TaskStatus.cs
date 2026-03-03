@@ -1,6 +1,6 @@
 namespace SharpTask.Domain.Enums;
 
-public enum TaskStatus
+public enum TaskState
 {
     Pending, // Pendiente
     OnHold, // En espera

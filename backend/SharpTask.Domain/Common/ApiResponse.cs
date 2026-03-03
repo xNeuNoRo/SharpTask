@@ -1,4 +1,4 @@
-namespace App.Entities;
+namespace SharpTask.Domain.Common;
 
 public class ApiResponse<T>
 {
