@@ -29,7 +29,7 @@ public class AppException : Exception
     // Error 403 - Forbidden
     public static AppException Forbidden(
         string message = "Acceso prohibido",
-        string code = ErrorCodes.Forbbiden
+        string code = ErrorCodes.Forbidden
     ) => new(code, 403, message);
 
     // Error 404 - Not Found
