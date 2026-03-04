@@ -1,3 +1,4 @@
+using System.Collections.Concurrent;
 using System.Text.Json;
 
 namespace SharpTask.Infrastructure.Repositories.Base;
@@ -15,6 +16,9 @@ public abstract class JsonBaseRepo<T>
     // Opciones de serializacion JSON
     protected readonly JsonSerializerOptions _options;
 
+    // Diccionario para manejar locks por archivo y evitar problemas de concurrencia al acceder a los archivos JSON
+    private static readonly ConcurrentDictionary<string, SemaphoreSlim> _fileLocks = new();
+
     /// <summary>
     /// Constructor de la clase base para repositorios que manejan archivos JSON.
     /// </summary>
@@ -30,6 +34,11 @@ public abstract class JsonBaseRepo<T>
             PropertyNameCaseInsensitive = true, // Ignora mayusculas/minusculas en los nombres de las propiedades
             AllowTrailingCommas = true, // Permite comas al final de los objetos/arrays en el JSON
         };
+
+        // Agrega un semaforo para esta ruta de archivo si no existe ya
+        // 1 semaforo por archivo para evitar problemas de concurrencia al
+        // acceder a los archivos JSON desde diferentes repositorios o hilos
+        _fileLocks.TryAdd(filePath, new SemaphoreSlim(1, 1));
 
         // Asegura que el archivo exista
         EnsureFile();
@@ -54,43 +63,247 @@ public abstract class JsonBaseRepo<T>
             File.WriteAllText(_filePath, "[]");
     }
 
+    // =================================
+    // "Obreros" privados para evitar deadlocks
+    // Al usar semaforo por archivo
+    // =================================
+
     /// <summary>
-    /// Metodo para cargar todos los items del archivo JSON.
+    /// Metodo privado para cargar todos los items del archivo JSON, sin semaforo para evitar posibles deadlocks al usar semaforos en operaciones publicas que llaman a este metodo.
     /// </summary>
     /// <returns>Una lista de objetos T cargados desde el archivo JSON.</returns>
-    public async Task<List<T>> LoadAsync()
+    private async Task<List<T>> LoadInternalAsync()
     {
-        // Si la cache no es nula, retorna la cache para evitar leer el archivo nuevamente
+        // Si la cache no es nula, retorna la cache
+        // para evitar leer una lectura innecesaria
         if (_cache != null)
             return _cache;
 
         // Asegura que el archivo exista antes de intentar cargarlo
         EnsureFile();
-
         // Lee el contenido del archivo JSON
         string json = await File.ReadAllTextAsync(_filePath);
 
         // Si el contenido esta vacío, retorna una lista vacia
         if (string.IsNullOrWhiteSpace(json))
         {
-            _cache = new List<T>();
-            return _cache;
+            return _cache = new List<T>();
         }
 
         try
         {
             // Deserializamos el contenido completo a una lista de objetos T
             // Si la deserializacion falla por X o Y razon, retornamos una lista vacia
-            _cache = JsonSerializer.Deserialize<List<T>>(json, _options) ?? new List<T>();
-            return _cache;
+            return _cache = JsonSerializer.Deserialize<List<T>>(json, _options) ?? new List<T>();
         }
         catch (JsonException)
         {
-            // Si el JSON se corrompio, no se puede deserializar, o algo raro idk, retornamos una lista vacia
-            _cache = new List<T>();
-            return _cache;
+            // Si el JSON se corrompio, no se puede deserializar,
+            // o algo raro idk, retornamos una lista vacia
+            return _cache = new List<T>();
         }
     }
+
+    /// <summary>
+    /// Metodo privado para guardar una lista completa de items en el archivo JSON, sin semaforo para evitar posibles deadlocks al usar semaforos en operaciones publicas que llaman a este metodo.
+    /// </summary>
+    /// <param name="items">La lista de objetos T a guardar en el archivo JSON.</param>
+    /// <returns>Una tarea que representa la operación de guardado.</returns>
+    private async Task SaveInternalAsync(List<T> items)
+    {
+        // Serializamos la lista completa a formato JSON
+        string json = JsonSerializer.Serialize(items, _options);
+        // Escribimos el JSON en el archivo (sobrescribiendo lo que haya)
+        await File.WriteAllTextAsync(_filePath, json);
+        // Actualizamos la cache con los items guardados
+        _cache = items;
+    }
+
+    // =================================
+    // Metodos publicos del repo
+    // Estos consumen los "obreros" privados para realizar las operaciones de carga y guardado
+    // con semaforos, evitando problemas de concurrencia y posibles deadlocks al acceder a los
+    // archivos JSON desde diferentes repositorios o hilos.
+    // =================================
+
+    /// <summary>
+    /// Metodo para cargar todos los items del archivo JSON.
+    /// </summary>
+    /// <returns>Una lista de objetos T cargados desde el archivo JSON.</returns>
+    public async Task<List<T>> LoadAsync()
+    {
+        // Obtenemos el semaforo correspondiente a este archivo para sincronizar el acceso
+        var semaphore = _fileLocks[_filePath];
+
+        // Esperamos a tener luz verde del semaforo para acceder al archivo, evitando problemas de concurrencia
+        await semaphore.WaitAsync();
+
+        // Una vez que tenemos el permiso del semaforo,
+        // llamamos al metodo interno para cargar los items sin semaforo
+        try
+        {
+            // Cargamos los items usando el metodo interno
+            // sin semaforo para evitar posibles deadlocks
+            return await LoadInternalAsync();
+        }
+        finally
+        {
+            // Liberamos el semaforo una vez terminada la operacion
+            semaphore.Release();
+        }
+    }
+
+    /// <summary>
+    /// Metodo para guardar una lista completa de items en el archivo JSON, sobrescribiendo lo que haya.
+    /// </summary>
+    /// <param name="items">La lista de objetos T a guardar en el archivo JSON.</param>
+    /// <returns>Una tarea asincronica que representa la operacion de guardado.</returns>
+    public async Task SaveAllAsync(List<T> items)
+    {
+        // Obtenemos el semaforo correspondiente a este archivo para sincronizar el acceso
+        var semaphore = _fileLocks[_filePath];
+
+        // Esperamos a tener luz verde del semaforo para acceder al archivo, evitando problemas de concurrencia
+        await semaphore.WaitAsync();
+
+        // Una vez que tenemos el permiso del semaforo,
+        // llamamos al metodo interno para guardar los items sin semaforo
+        try
+        {
+            // Guardamos los items usando el metodo interno sin semaforo para evitar posibles deadlocks
+            await SaveInternalAsync(items);
+        }
+        finally
+        {
+            // Liberamos el semaforo una vez terminada la operacion
+            semaphore.Release();
+        }
+    }
+
+    /// <summary>
+    /// Metodo para agregar un nuevo item al archivo JSON sin necesidad de cargar y guardar toda la lista manualmente.
+    /// </summary>
+    /// <param name="item">El item a agregar.</param>
+    /// <returns>Una tarea asincronica que representa la operacion de agregado.</returns>
+    public async Task AppendAsync(T item)
+    {
+        // Obtenemos el semaforo correspondiente a este archivo para sincronizar el acceso
+        var semaphore = _fileLocks[_filePath];
+
+        // Esperamos a tener luz verde del semaforo para acceder al archivo, evitando problemas de concurrencia
+        await semaphore.WaitAsync();
+
+        try
+        {
+            // Cargamos los items usando el metodo interno sin semaforo para evitar posibles deadlocks
+            var items = await LoadInternalAsync();
+            // Agregamos el nuevo item a la lista cargada
+            items.Add(item);
+            // Guardamos la lista actualizada con el nuevo item usando el metodo interno sin semaforo para evitar posibles deadlocks
+            await SaveInternalAsync(items);
+        }
+        finally
+        {
+            // Liberamos el semaforo una vez terminada la operacion
+            semaphore.Release();
+        }
+    }
+
+    /// <summary>
+    /// Metodo para actualizar un item que cumpla con la condicion dada por el callback, reemplazandolo por un nuevo item dado.
+    /// </summary>
+    /// <param name="cb">El callback que define la condición a cumplir.</param>
+    /// <param name="newItem">El nuevo item con el que se reemplazará el item encontrado.</param>
+    /// <returns>True si se actualizó correctamente, false si no se encontró ningún item que cumpla con la condición.</returns>
+    public async Task<bool> UpdateAsync(Func<T, bool> cb, T newItem)
+    {
+        // Obtenemos el semaforo correspondiente a este archivo para sincronizar el acceso
+        var semaphore = _fileLocks[_filePath];
+
+        // Esperamos a tener luz verde del semaforo para acceder al archivo, evitando problemas de concurrencia
+        await semaphore.WaitAsync();
+
+        // Una vez que tenemos el permiso del semaforo,
+        // llamamos al metodo interno para cargar y guardar los items sin semaforo
+        try
+        {
+            // Cargamos todos los items
+            var items = await LoadInternalAsync();
+
+            // Buscamos el indice del primer item que cumple con el callback
+            int index = items.FindIndex(new Predicate<T>(cb));
+
+            // Si no se encontro ningun item que cumpla con el callback, retorna false
+            if (index == -1)
+                return false;
+
+            // Reemplaza el item en el indice encontrado con el nuevo item dado
+            items[index] = newItem;
+
+            // Guarda todos los items actualizados en el archivo
+            await SaveInternalAsync(items);
+
+            // Retorna true indicando que se actualizo correctamente
+            return true;
+        }
+        finally
+        {
+            // Liberamos el semaforo una vez terminada la operacion
+            semaphore.Release();
+        }
+    }
+
+    /// <summary>
+    /// Metodo para eliminar items que cumplan con la condicion dada por el callback.
+    /// EJ: Si cb es x => x.Id == 5, se eliminan todos los items que tengan Id igual a 5.
+    /// </summary>
+    /// <param name="cb">El callback que define la condición a cumplir.</param>
+    /// <returns>True si se eliminó al menos un item, false si no se eliminó ninguno.</returns>
+    public async Task<bool> DeleteAsync(Func<T, bool> cb)
+    {
+        // Obtenemos el semaforo correspondiente a este archivo para sincronizar el acceso
+        var semaphore = _fileLocks[_filePath];
+
+        // Esperamos a tener luz verde del semaforo para acceder al archivo, evitando problemas de concurrencia
+        await semaphore.WaitAsync();
+
+        // Una vez que tenemos el permiso del semaforo,
+        // llamamos al metodo interno para cargar y guardar los items sin semaforo
+        try
+        {
+            // Cargamos todos los items
+            var items = await LoadInternalAsync();
+
+            // Cuenta cuantos items habia inicialmente
+            int initialCount = items.Count;
+
+            // Filtramos los items que NO cumplen con el callback
+            // EJ: Si cb es x => x.Id == 5, se quedan todos los que NO tienen Id 5
+            var remainingItems = items.Where(x => !cb(x)).ToList();
+
+            // Si la cantidad de items restantes es diferente a la inicial, significa que se elimino al menos uno
+            if (remainingItems.Count != initialCount)
+            {
+                // Guardamos la lista actualizada sin los items eliminados
+                await SaveInternalAsync(remainingItems);
+                return true;
+            }
+
+            // Retornamos false indicando que no se elimino ningun item
+            return false;
+        }
+        finally
+        {
+            // Liberamos el semaforo una vez terminada la operacion
+            semaphore.Release();
+        }
+    }
+
+    // =================================
+    // Metodos que consumen los metodos
+    // publicos basicos del repo para realizar operaciones mas complejas
+    // y a su vez estos son seguros ante concurrencia gracias a los semaforos
+    // =================================
 
     /// <summary>
     /// Metodo para encontrar todos los items que cumplan con la condicion dada por el callback.
@@ -116,96 +329,6 @@ public abstract class JsonBaseRepo<T>
     {
         // Buscamos el primer objeto que cumpla la condición del delegado
         return (await LoadAsync()).FirstOrDefault(cb);
-    }
-
-    /// <summary>
-    /// Metodo para guardar una lista completa de items en el archivo JSON, sobrescribiendo lo que haya.
-    /// </summary>
-    /// <param name="items">La lista de items a guardar.</param>
-    /// <returns>Una tarea asincronica que representa la operacion de guardado.</returns>
-    public async Task SaveAllAsync(List<T> items)
-    {
-        // Serializamos la lista completa a formato JSON
-        string json = JsonSerializer.Serialize(items, _options);
-        // Escribimos el JSON en el archivo (sobrescribiendo lo que haya)
-        await File.WriteAllTextAsync(_filePath, json);
-        // Actualizamos la cache con los items guardados
-        _cache = items;
-    }
-
-    /// <summary>
-    /// Metodo para agregar un nuevo item al archivo JSON sin necesidad de cargar y guardar toda la lista manualmente.
-    /// </summary>
-    /// <param name="item">El item a agregar.</param>
-    /// <returns>Una tarea asincronica que representa la operacion de agregado.</returns>
-    public async Task AppendAsync(T item)
-    {
-        // Cargamos todos los items existentes
-        var items = await LoadAsync();
-
-        // Agregamos el nuevo item a la lista
-        items.Add(item);
-
-        // Guardamos nuevamente toda la lista en el archivo
-        await SaveAllAsync(items);
-    }
-
-    /// <summary>
-    /// Metodo para actualizar un item que cumpla con la condicion dada por el callback, reemplazandolo por un nuevo item dado.
-    /// </summary>
-    /// <param name="cb">El callback que define la condición a cumplir.</param>
-    /// <param name="newItem">El nuevo item con el que se reemplazará el item encontrado.</param>
-    /// <returns>True si se actualizó correctamente, false si no se encontró ningún item que cumpla con la condición.</returns>
-    public async Task<bool> UpdateAsync(Func<T, bool> cb, T newItem)
-    {
-        // Cargamos todos los items
-        var items = await LoadAsync();
-
-        // Buscamos el indice del primer item que cumple con el callback
-        int index = items.FindIndex(new Predicate<T>(cb));
-
-        // Si no se encontro ningun item que cumpla con el callback, retorna false
-        if (index == -1)
-            return false;
-
-        // Reemplaza el item en el indice encontrado con el nuevo item dado
-        items[index] = newItem;
-
-        // Guarda todos los items actualizados en el archivo
-        await SaveAllAsync(items);
-
-        // Retorna true indicando que se actualizo correctamente
-        return true;
-    }
-
-    /// <summary>
-    /// Metodo para eliminar items que cumplan con la condicion dada por el callback.
-    /// EJ: Si cb es x => x.Id == 5, se eliminan todos los items que tengan Id igual a 5.
-    /// </summary>
-    /// <param name="cb">El callback que define la condición a cumplir.</param>
-    /// <returns>True si se eliminó al menos un item, false si no se eliminó ninguno.</returns>
-    public async Task<bool> DeleteAsync(Func<T, bool> cb)
-    {
-        // Cargamos todos los items
-        var items = await LoadAsync();
-
-        // Cuenta cuantos items habia inicialmente
-        int initialCount = items.Count;
-
-        // Filtramos los items que NO cumplen con el callback
-        // EJ: Si cb es x => x.Id == 5, se quedan todos los que NO tienen Id 5
-        var remainingItems = items.Where(x => !cb(x)).ToList();
-
-        // Si la cantidad de items restantes es diferente a la inicial, significa que se elimino al menos uno
-        if (remainingItems.Count != initialCount)
-        {
-            // Guardamos la lista actualizada sin los items eliminados
-            await SaveAllAsync(remainingItems);
-            return true;
-        }
-
-        // Retornamos false indicando que no se elimino ningun item
-        return false;
     }
 
     // =================================
