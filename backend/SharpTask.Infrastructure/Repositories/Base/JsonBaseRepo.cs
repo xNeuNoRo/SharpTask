@@ -1,14 +1,6 @@
-using System.Collections.Concurrent;
 using System.Text.Json;
 
 namespace SharpTask.Infrastructure.Repositories.Base;
-
-// Clase interna para tener un solo diccionario global en la app que maneje los locks por archivo,
-// evitando problemas de concurrencia al acceder a los archivos JSON desde diferentes repositorios o hilos.
-internal static class JsonFileLockManager
-{
-    public static readonly ConcurrentDictionary<string, SemaphoreSlim> FileLocks = new();
-}
 
 public abstract class JsonBaseRepo<T>
     where T : class // Restringimos T a ser una clase (referencia) para evitar problemas con tipos primitivos
