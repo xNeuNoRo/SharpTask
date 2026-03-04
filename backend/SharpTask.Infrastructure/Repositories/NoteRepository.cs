@@ -53,11 +53,11 @@ public class NoteRepository : JsonBaseRepo<NoteItem>, INoteRepository
     /// Actualiza una nota existente en el JSON.
     /// </summary>
     /// <param name="note">La nota a actualizar.</param>
-    /// <returns>La nota actualizada.</returns>
-    public async Task<NoteItem> UpdateAsync(NoteItem note)
+    /// <returns>La nota actualizada si se actualizó correctamente, o null si no se encontró o no se pudo actualizar.</returns>
+    public async Task<NoteItem?> UpdateAsync(NoteItem note)
     {
-        await base.UpdateAsync(x => x.Id == note.Id, note);
-        return note;
+        var updatedNote = await base.UpdateAsync(x => x.Id == note.Id, note);
+        return updatedNote ? note : null;
     }
 
     /// <summary>
