@@ -19,7 +19,7 @@ public static class DependencyInjection
     )
     {
         // Configuración de rutas para los archivos JSON de tareas y notas
-        var basePath = AppDomain.CurrentDomain.BaseDirectory;
+        var basePath = AppContext.BaseDirectory;
 
         // Obtenemos las rutas relativas de los archivos JSON desde la configuración, con valores predeterminados si no están configurados
         var tasksRelativePath = configuration["FileStorage:TasksFilePath"] ?? "Data/tasks.json";
