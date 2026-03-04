@@ -15,7 +15,7 @@ public class NoteRepository : JsonBaseRepo<NoteItem>, INoteRepository
 
     // =================================
     // Implementacion del CRUD basico para NoteItem
-    // que es la implementacion directa de IBaseRepository<TaskItem>
+    // que es la implementacion directa de IBaseRepository<NoteItem>
     // =================================
 
     /// <summary>
@@ -90,6 +90,7 @@ public class NoteRepository : JsonBaseRepo<NoteItem>, INoteRepository
     /// <returns>True si todas las notas fueron eliminadas correctamente, false en caso contrario.</returns>
     public async Task<bool> DeleteNotesByTaskIdAsync(Guid taskId)
     {
-        return await base.DeleteAsync(x => x.TaskId == taskId);
+       await base.DeleteAsync(x => x.TaskId == taskId);
+       return true;
     }
 }
