@@ -3,6 +3,13 @@ using System.Text.Json;
 
 namespace SharpTask.Infrastructure.Repositories.Base;
 
+// Clase interna para tener un solo diccionario global en la app que maneje los locks por archivo,
+// evitando problemas de concurrencia al acceder a los archivos JSON desde diferentes repositorios o hilos.
+internal static class JsonFileLockManager
+{
+    public static readonly ConcurrentDictionary<string, SemaphoreSlim> FileLocks = new();
+}
+
 public abstract class JsonBaseRepo<T>
     where T : class // Restringimos T a ser una clase (referencia) para evitar problemas con tipos primitivos
 {
@@ -16,8 +23,8 @@ public abstract class JsonBaseRepo<T>
     // Opciones de serializacion JSON
     protected readonly JsonSerializerOptions _options;
 
-    // Diccionario para manejar locks por archivo y evitar problemas de concurrencia al acceder a los archivos JSON
-    private static readonly ConcurrentDictionary<string, SemaphoreSlim> _fileLocks = new();
+    // Referencia al semaforo de este archivo en el diccionario global del JsonFileLockManager para sincronizar el acceso a este archivo
+    private readonly SemaphoreSlim _fileLock;
 
     /// <summary>
     /// Constructor de la clase base para repositorios que manejan archivos JSON.
@@ -35,10 +42,10 @@ public abstract class JsonBaseRepo<T>
             AllowTrailingCommas = true, // Permite comas al final de los objetos/arrays en el JSON
         };
 
-        // Agrega un semaforo para esta ruta de archivo si no existe ya
+        // Obtenemos o creamos un semaforo para esta ruta de archivo si no existe ya
         // 1 semaforo por archivo para evitar problemas de concurrencia al
         // acceder a los archivos JSON desde diferentes repositorios o hilos
-        _fileLocks.TryAdd(filePath, new SemaphoreSlim(1, 1));
+        _fileLock = JsonFileLockManager.FileLocks.GetOrAdd(filePath, _ => new SemaphoreSlim(1, 1));
 
         // Asegura que el archivo exista
         EnsureFile();
@@ -132,11 +139,8 @@ public abstract class JsonBaseRepo<T>
     /// <returns>Una lista de objetos T cargados desde el archivo JSON.</returns>
     public async Task<List<T>> LoadAsync()
     {
-        // Obtenemos el semaforo correspondiente a este archivo para sincronizar el acceso
-        var semaphore = _fileLocks[_filePath];
-
         // Esperamos a tener luz verde del semaforo para acceder al archivo, evitando problemas de concurrencia
-        await semaphore.WaitAsync();
+        await _fileLock.WaitAsync();
 
         // Una vez que tenemos el permiso del semaforo,
         // llamamos al metodo interno para cargar los items sin semaforo
@@ -149,7 +153,7 @@ public abstract class JsonBaseRepo<T>
         finally
         {
             // Liberamos el semaforo una vez terminada la operacion
-            semaphore.Release();
+            _fileLock.Release();
         }
     }
 
@@ -160,11 +164,8 @@ public abstract class JsonBaseRepo<T>
     /// <returns>Una tarea asincronica que representa la operacion de guardado.</returns>
     public async Task SaveAllAsync(List<T> items)
     {
-        // Obtenemos el semaforo correspondiente a este archivo para sincronizar el acceso
-        var semaphore = _fileLocks[_filePath];
-
         // Esperamos a tener luz verde del semaforo para acceder al archivo, evitando problemas de concurrencia
-        await semaphore.WaitAsync();
+        await _fileLock.WaitAsync();
 
         // Una vez que tenemos el permiso del semaforo,
         // llamamos al metodo interno para guardar los items sin semaforo
@@ -176,7 +177,7 @@ public abstract class JsonBaseRepo<T>
         finally
         {
             // Liberamos el semaforo una vez terminada la operacion
-            semaphore.Release();
+            _fileLock.Release();
         }
     }
 
@@ -187,11 +188,8 @@ public abstract class JsonBaseRepo<T>
     /// <returns>Una tarea asincronica que representa la operacion de agregado.</returns>
     public async Task AppendAsync(T item)
     {
-        // Obtenemos el semaforo correspondiente a este archivo para sincronizar el acceso
-        var semaphore = _fileLocks[_filePath];
-
         // Esperamos a tener luz verde del semaforo para acceder al archivo, evitando problemas de concurrencia
-        await semaphore.WaitAsync();
+        await _fileLock.WaitAsync();
 
         try
         {
@@ -205,7 +203,7 @@ public abstract class JsonBaseRepo<T>
         finally
         {
             // Liberamos el semaforo una vez terminada la operacion
-            semaphore.Release();
+            _fileLock.Release();
         }
     }
 
@@ -217,11 +215,8 @@ public abstract class JsonBaseRepo<T>
     /// <returns>True si se actualizó correctamente, false si no se encontró ningún item que cumpla con la condición.</returns>
     public async Task<bool> UpdateAsync(Func<T, bool> cb, T newItem)
     {
-        // Obtenemos el semaforo correspondiente a este archivo para sincronizar el acceso
-        var semaphore = _fileLocks[_filePath];
-
         // Esperamos a tener luz verde del semaforo para acceder al archivo, evitando problemas de concurrencia
-        await semaphore.WaitAsync();
+        await _fileLock.WaitAsync();
 
         // Una vez que tenemos el permiso del semaforo,
         // llamamos al metodo interno para cargar y guardar los items sin semaforo
@@ -249,7 +244,7 @@ public abstract class JsonBaseRepo<T>
         finally
         {
             // Liberamos el semaforo una vez terminada la operacion
-            semaphore.Release();
+            _fileLock.Release();
         }
     }
 
@@ -261,11 +256,8 @@ public abstract class JsonBaseRepo<T>
     /// <returns>True si se eliminó al menos un item, false si no se eliminó ninguno.</returns>
     public async Task<bool> DeleteAsync(Func<T, bool> cb)
     {
-        // Obtenemos el semaforo correspondiente a este archivo para sincronizar el acceso
-        var semaphore = _fileLocks[_filePath];
-
         // Esperamos a tener luz verde del semaforo para acceder al archivo, evitando problemas de concurrencia
-        await semaphore.WaitAsync();
+        await _fileLock.WaitAsync();
 
         // Una vez que tenemos el permiso del semaforo,
         // llamamos al metodo interno para cargar y guardar los items sin semaforo
@@ -295,7 +287,7 @@ public abstract class JsonBaseRepo<T>
         finally
         {
             // Liberamos el semaforo una vez terminada la operacion
-            semaphore.Release();
+            _fileLock.Release();
         }
     }
 
