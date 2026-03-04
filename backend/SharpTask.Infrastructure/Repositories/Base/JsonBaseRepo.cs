@@ -128,8 +128,8 @@ public abstract class JsonBaseRepo<T>
         string json = JsonSerializer.Serialize(items, _options);
         // Escribimos el JSON en el archivo (sobrescribiendo lo que haya)
         await File.WriteAllTextAsync(_filePath, json);
-        // Actualizamos la cache con los items guardados
-        _cache = items;
+        // Actualizamos la cache con una copia de los items guardados para evitar modificaciones externas
+        _cache = items.ToList();
     }
 
     // =================================
