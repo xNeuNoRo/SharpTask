@@ -99,8 +99,19 @@ public abstract class JsonBaseRepo<T>
         catch (JsonException)
         {
             // Si el JSON se corrompio, no se puede deserializar,
-            // o algo raro idk, retornamos una lista vacia
-            return _cache = new List<T>();
+            // o algo raro idk, renombramos el archivo y retornamos un error para avisar
+            // que se perdieron los datos, de esa forma la app puede continuar escribiendo
+            // gracias al EnsureFile() que creara un nuevo archivo limpio, y el usuario puede
+            // revisar el archivo renombrado para intentar recuperar los datos manualmente si quiere
+            string corruptedFilePath = $"{_filePath}.corrupted_{DateTime.Now:yyyyMMddHHmmss}";
+            if (File.Exists(_filePath))
+            {
+                File.Move(_filePath, corruptedFilePath);
+            }
+
+            throw new InvalidDataException(
+                $"El archivo JSON en {Path.GetFileName(_filePath)} esta corrupto o no se pudo deserializar."
+            );
         }
     }
 
