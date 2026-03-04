@@ -115,10 +115,12 @@ public class TaskRepository : JsonBaseRepo<TaskItem>, ITaskRepository
         if (string.IsNullOrWhiteSpace(keyword))
             return await GetAllAsync();
 
-        var lowerKeyword = keyword.ToLower();
         return await base.FindManyAsync(x =>
-            x.Title.ToLower().Contains(lowerKeyword)
-            || (x.Description != null && x.Description.ToLower().Contains(lowerKeyword))
+            x.Title.Contains(keyword, StringComparison.OrdinalIgnoreCase)
+            || (
+                !string.IsNullOrEmpty(x.Description)
+                && x.Description.Contains(keyword, StringComparison.OrdinalIgnoreCase)
+            )
         );
     }
 }
