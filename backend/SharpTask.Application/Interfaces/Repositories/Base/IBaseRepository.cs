@@ -8,7 +8,7 @@ public interface IBaseRepository<T>
     where T : class
 {
     // Contrato para las operaciones CRUD basicas que cualquier repositorio debe implementar
-    Task<List<T>> GetAllAsync();
+    Task<IEnumerable<T>> GetAllAsync();
     Task<T?> GetByIdAsync(Guid id);
     Task<T> AddAsync(T entity);
     Task<bool> UpdateAsync(T entity);

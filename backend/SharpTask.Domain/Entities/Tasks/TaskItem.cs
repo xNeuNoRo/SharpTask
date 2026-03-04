@@ -9,4 +9,5 @@ public class TaskItem : BaseEntity
     public string? Description { get; set; }
     public TaskState Status { get; set; }
     public List<TaskChange> Changes { get; set; } = new();
+    public List<NoteItem> Notes { get; set; } = new();
 }

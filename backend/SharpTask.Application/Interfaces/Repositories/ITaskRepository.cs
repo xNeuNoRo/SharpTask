@@ -11,6 +11,6 @@ namespace SharpTask.Application.Interfaces.Repositories;
 public interface ITaskRepository : IBaseRepository<TaskItem>
 {
     Task<TaskItem?> GetTaskWithNotesAsync(Guid id);
-    Task<List<TaskItem>> GetTasksByStatusAsync(TaskState status);
-    Task<List<TaskItem>> SearchTasksAsync(string keyword);
+    Task<IEnumerable<TaskItem>> GetTasksByStatusAsync(TaskState status);
+    Task<IEnumerable<TaskItem>> SearchTasksAsync(string keyword);
 }
