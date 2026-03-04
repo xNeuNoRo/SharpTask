@@ -69,11 +69,25 @@ public class TaskRepository : JsonBaseRepo<TaskItem>, ITaskRepository
     }
 
     /// <summary>
-    /// Elimina una tarea por su ID del JSON.
+    /// Elimina una tarea y sus notas relacionadas por su ID del JSON.
     /// </summary>
     /// <param name="id">El identificador único de la tarea a eliminar.</param>
-    /// <returns>True si la tarea fue eliminada, false en caso contrario.</returns>
-    public async Task<bool> DeleteAsync(Guid id) => await base.DeleteAsync(x => x.Id == id);
+    /// <returns>True si la tarea y sus notas fueron eliminadas, false en caso contrario.</returns>
+    public async Task<bool> DeleteAsync(Guid id)
+    {
+        // Primero eliminamos la tarea del JSON
+        var deleted = await base.DeleteAsync(x => x.Id == id);
+
+        // Si la tarea fue eliminada exitosamente, también eliminamos las notas relacionadas a esta tarea
+        if (deleted)
+        {
+            // Elimina las notas relacionadas a esta tarea
+            await _noteRepository.DeleteNotesByTaskIdAsync(id);
+        }
+
+        // Retorna el resultado de la eliminación de la tarea
+        return deleted;
+    }
 
     // =================================
     // Implementacion de las operaciones especificas
