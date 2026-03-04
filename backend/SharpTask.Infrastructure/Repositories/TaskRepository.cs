@@ -87,12 +87,21 @@ public class TaskRepository : JsonBaseRepo<TaskItem>, ITaskRepository
     /// <returns>La tarea encontrada con sus notas incluidas o null si no existe.</returns>
     public async Task<TaskItem?> GetTaskWithNotesAsync(Guid id)
     {
-        return await base.FindWithIncludeAsync<NoteItem>(
-            cb: task => task.Id == id,
-            relatedRepo: _noteRepository,
-            includeLogic: (task, allNotes) =>
-                task.Notes = allNotes.Where(note => note.TaskId == task.Id).ToList()
-        );
+        // Primero obtenemos la tarea básica sin las notas
+        var task = await base.FindAsync(x => x.Id == id);
+
+        // Si la tarea no existe, retornamos null
+        if (task is null)
+            return null;
+
+        // Luego obtenemos las notas relacionadas a esta tarea usando el repositorio de notas
+        var notes = await _noteRepository.GetNotesByTaskIdAsync(id);
+
+        // Asignamos las notas obtenidas a la propiedad Notes de la tarea
+        task.Notes = notes.ToList();
+
+        // Finalmente, retornamos la tarea con sus notas incluidas
+        return task;
     }
 
     /// <summary>
