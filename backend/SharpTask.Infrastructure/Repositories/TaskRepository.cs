@@ -61,9 +61,12 @@ public class TaskRepository : JsonBaseRepo<TaskItem>, ITaskRepository
     /// Actualiza una tarea existente en el JSON.
     /// </summary>
     /// <param name="task">La tarea actualizada.</param>
-    /// <returns>True si la tarea fue actualizada, false en caso contrario.</returns>
-    public async Task<bool> UpdateAsync(TaskItem task) =>
+    /// <returns>La tarea actualizada.</returns>
+    public async Task<TaskItem> UpdateAsync(TaskItem task)
+    {
         await base.UpdateAsync(x => x.Id == task.Id, task);
+        return task;
+    }
 
     /// <summary>
     /// Elimina una tarea por su ID del JSON.
