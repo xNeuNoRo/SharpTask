@@ -77,7 +77,7 @@ public abstract class JsonBaseRepo<T>
         // Si la cache no es nula, retorna la cache
         // para evitar leer una lectura innecesaria
         if (_cache != null)
-            return _cache;
+            return _cache.ToList(); // Retorna una copia de la cache para evitar modificaciones externas a la cache original
 
         // Asegura que el archivo exista antes de intentar cargarlo
         EnsureFile();
@@ -87,14 +87,16 @@ public abstract class JsonBaseRepo<T>
         // Si el contenido esta vacío, retorna una lista vacia
         if (string.IsNullOrWhiteSpace(json))
         {
-            return _cache = new List<T>();
+            _cache = new List<T>();
+            return _cache.ToList(); // Retorna una copia de la cache para evitar modificaciones externas a la cache original
         }
 
         try
         {
             // Deserializamos el contenido completo a una lista de objetos T
             // Si la deserializacion falla por X o Y razon, retornamos una lista vacia
-            return _cache = JsonSerializer.Deserialize<List<T>>(json, _options) ?? new List<T>();
+            _cache = JsonSerializer.Deserialize<List<T>>(json, _options) ?? new List<T>();
+            return _cache.ToList(); // Retorna una copia de la cache para evitar modificaciones externas a la cache original
         }
         catch (JsonException)
         {
