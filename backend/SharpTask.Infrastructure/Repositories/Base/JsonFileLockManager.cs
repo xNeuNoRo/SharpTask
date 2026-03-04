@@ -6,5 +6,13 @@ namespace SharpTask.Infrastructure.Repositories.Base;
 
 internal static class JsonFileLockManager
 {
-    public static readonly ConcurrentDictionary<string, SemaphoreSlim> FileLocks = new();
+    private static readonly ConcurrentDictionary<string, SemaphoreSlim> FileLocks = new();
+
+    // Obtiene el lock asociado a un archivo específico. Si no existe, lo crea y lo agrega al diccionario.
+    // Encapsulado de esta forma para evitar modificaciones directas al diccionario global, y asi lo encapsulamos y controlamos el acceso a los locks de manera centralizada.
+    public static SemaphoreSlim GetOrCreateLock(string filePath)
+    {
+        // Si ya existe un lock para el archivo, lo retornamos. Si no, creamos uno nuevo y lo agregamos al diccionario.
+        return FileLocks.GetOrAdd(filePath, _ => new SemaphoreSlim(1, 1));
+    }
 }

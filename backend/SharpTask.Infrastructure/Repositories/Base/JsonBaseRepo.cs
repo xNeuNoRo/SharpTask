@@ -38,7 +38,7 @@ public abstract class JsonBaseRepo<T>
         // Obtenemos o creamos un semaforo para esta ruta de archivo si no existe ya
         // 1 semaforo por archivo para evitar problemas de concurrencia al
         // acceder a los archivos JSON desde diferentes repositorios o hilos
-        _fileLock = JsonFileLockManager.FileLocks.GetOrAdd(filePath, _ => new SemaphoreSlim(1, 1));
+        _fileLock = JsonFileLockManager.GetOrCreateLock(filePath);
 
         // Asegura que el archivo exista
         EnsureFile();
@@ -356,11 +356,11 @@ public abstract class JsonBaseRepo<T>
             return null;
 
         // Cargamos todos los items relacionados usando el repo relacionado dado
-        var relatedItems = await relatedRepo.GetAllAsync();
+        var relatedItems = (await relatedRepo.GetAllAsync()).ToList();
 
         // Aplicamos la logica de inclusion inyectada al item principal con los items relacionados cargados
         // EJ: (note, tasks) => note.Task = tasks.FirstOrDefault(t => t.Id == note.TaskId)
-        includeLogic(item, relatedItems.ToList());
+        includeLogic(item, relatedItems);
 
         return item;
     }
@@ -384,12 +384,12 @@ public abstract class JsonBaseRepo<T>
     {
         // Cargamos todos los items principales y relacionados usando sus respectivos repos
         var items = await LoadAsync();
-        var relatedItems = await relatedRepo.GetAllAsync();
+        var relatedItems = (await relatedRepo.GetAllAsync()).ToList();
 
         // Por cada item principal, aplicamos la logica de inclusion inyectada con los items relacionados cargados
         foreach (var item in items)
         {
-            includeLogic(item, relatedItems.ToList());
+            includeLogic(item, relatedItems);
         }
 
         // Retornamos la lista de items principales con sus items relacionados incluidos
@@ -425,12 +425,12 @@ public abstract class JsonBaseRepo<T>
             return filteredItems;
 
         // Cargamos todos los items relacionados usando el repo relacionado dado
-        var relatedItems = await relatedRepo.GetAllAsync();
+        var relatedItems = (await relatedRepo.GetAllAsync()).ToList();
 
         // Por cada item principal filtrado, aplicamos la logica de inclusion inyectada con los items relacionados cargados
         foreach (var item in filteredItems)
         {
-            includeLogic(item, relatedItems.ToList());
+            includeLogic(item, relatedItems);
         }
 
         return filteredItems;
