@@ -1,4 +1,5 @@
 using System.Text.Json;
+using SharpTask.Application.Interfaces.Repositories.Base;
 
 namespace SharpTask.Infrastructure.Repositories.Base;
 
@@ -330,7 +331,7 @@ public abstract class JsonBaseRepo<T>
     /// <returns>El item principal encontrado con sus items relacionados incluidos, o null si no se encontró el item principal.</returns>
     public async Task<T?> FindWithIncludeAsync<TRelated>(
         Func<T, bool> cb, // El callback para encontrar el item principal
-        JsonBaseRepo<TRelated> relatedRepo, // El repo de los items relacionados
+        IBaseRepository<TRelated> relatedRepo, // El repo de los items relacionados
         Action<T, List<TRelated>> includeLogic // La logica de inclusion que se aplica al item principal con los items relacionados
     )
         where TRelated : class
@@ -344,11 +345,11 @@ public abstract class JsonBaseRepo<T>
             return null;
 
         // Cargamos todos los items relacionados usando el repo relacionado dado
-        var relatedItems = await relatedRepo.LoadAsync();
+        var relatedItems = await relatedRepo.GetAllAsync();
 
         // Aplicamos la logica de inclusion inyectada al item principal con los items relacionados cargados
         // EJ: (note, tasks) => note.Task = tasks.FirstOrDefault(t => t.Id == note.TaskId)
-        includeLogic(item, relatedItems);
+        includeLogic(item, relatedItems.ToList());
 
         return item;
     }
@@ -365,19 +366,19 @@ public abstract class JsonBaseRepo<T>
     /// <param name="includeLogic">La logica de inclusion que se aplica a cada item principal con sus items relacionados.</param>
     /// <returns>La lista de items principales con sus items relacionados incluidos.</returns>
     public async Task<List<T>> LoadWithIncludeAsync<TRelated>(
-        JsonBaseRepo<TRelated> relatedRepo,
+        IBaseRepository<TRelated> relatedRepo,
         Action<T, List<TRelated>> includeLogic
     )
         where TRelated : class
     {
         // Cargamos todos los items principales y relacionados usando sus respectivos repos
         var items = await LoadAsync();
-        var relatedItems = await relatedRepo.LoadAsync();
+        var relatedItems = await relatedRepo.GetAllAsync();
 
         // Por cada item principal, aplicamos la logica de inclusion inyectada con los items relacionados cargados
         foreach (var item in items)
         {
-            includeLogic(item, relatedItems);
+            includeLogic(item, relatedItems.ToList());
         }
 
         // Retornamos la lista de items principales con sus items relacionados incluidos
@@ -398,7 +399,7 @@ public abstract class JsonBaseRepo<T>
     /// <returns>La lista de items principales que cumplen con la condicion dada por el callback, con sus items relacionados incluidos.</returns>
     public async Task<List<T>> FindManyWithIncludeAsync<TRelated>(
         Func<T, bool> cb, // Condicion para filtrar (Ej: x => x.Status == Pending)
-        JsonBaseRepo<TRelated> relatedRepo, // El repo de los items relacionados
+        IBaseRepository<TRelated> relatedRepo, // El repo de los items relacionados
         Action<T, List<TRelated>> includeLogic // La logica de inclusion que se aplica a cada item principal con sus items relacionados
     )
         where TRelated : class
@@ -413,12 +414,12 @@ public abstract class JsonBaseRepo<T>
             return filteredItems;
 
         // Cargamos todos los items relacionados usando el repo relacionado dado
-        var relatedItems = await relatedRepo.LoadAsync();
+        var relatedItems = await relatedRepo.GetAllAsync();
 
         // Por cada item principal filtrado, aplicamos la logica de inclusion inyectada con los items relacionados cargados
         foreach (var item in filteredItems)
         {
-            includeLogic(item, relatedItems);
+            includeLogic(item, relatedItems.ToList());
         }
 
         return filteredItems;
