@@ -3,7 +3,4 @@ using SharpTask.Application.Validators.Base;
 
 namespace SharpTask.Application.Validators.Note;
 
-public class UpdateNoteValidator : NoteRequestBaseValidator<UpdateNoteRequestDto>
-{
-    public UpdateNoteValidator() { }
-}
+public class UpdateNoteValidator : NoteRequestBaseValidator<UpdateNoteRequestDto> { }

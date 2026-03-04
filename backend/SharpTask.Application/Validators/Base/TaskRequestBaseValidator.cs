@@ -19,8 +19,6 @@ public class TaskRequestBaseValidator<T> : AbstractValidator<T>
             .WithMessage("El título no puede exceder los 256 caracteres.");
 
         RuleFor(x => x.Description)
-            .NotEmpty()
-            .WithMessage("La descripción es obligatoria.")
             .MaximumLength(1024)
             .WithMessage("La descripción no puede exceder los 1024 caracteres.");
 
