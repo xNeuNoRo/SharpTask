@@ -115,7 +115,7 @@ public abstract class BaseApiController : ControllerBase
     {
         if (condition)
         {
-            return Ok(ApiResponse<object>.Success(new { success = true }));
+            return Success();
         }
 
         return NotFound(ApiResponse<object>.Failure(errorCode, message));
@@ -141,7 +141,7 @@ public abstract class BaseApiController : ControllerBase
     {
         if (!result)
             return FailureResponse(errorCode, message, 400);
-        return Success(new { success = true });
+        return Success();
     }
 
     /// <remarks>
