@@ -84,10 +84,10 @@ public class NoteRepository : JsonBaseRepo<NoteItem>, INoteRepository
     }
 
     /// <summary>
-    /// Elimina todas las notas asociadas a una tarea específica por su ID. Devuelve true si todas las notas fueron eliminadas correctamente, o false si alguna nota no pudo ser eliminada.
+    /// Elimina todas las notas asociadas a una tarea específica por su ID. Devuelve true si al menos una nota fue eliminada correctamente, o false si alguna nota no pudo ser eliminada.
     /// </summary>
     /// <param name="taskId">El identificador único de la tarea.</param>
-    /// <returns>True si todas las notas fueron eliminadas correctamente, false en caso contrario.</returns>
+    /// <returns>True si al menos una nota fue eliminada correctamente, false en caso contrario.</returns>
     public async Task<bool> DeleteNotesByTaskIdAsync(Guid taskId)
     {
         return await base.DeleteAsync(x => x.TaskId == taskId);
