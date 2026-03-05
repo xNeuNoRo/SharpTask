@@ -4,6 +4,10 @@ using SharpTask.Infrastructure.Repositories.Base;
 
 namespace SharpTask.Infrastructure.Repositories;
 
+/// <summary>
+/// Repositorio concreto para manejar las operaciones CRUD y demas
+/// de las notas (NoteItem) utilizando un archivo JSON como almacenamiento.
+/// </summary>
 public class NoteRepository : JsonBaseRepo<NoteItem>, INoteRepository
 {
     /// <remarks>

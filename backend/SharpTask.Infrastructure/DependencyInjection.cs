@@ -7,6 +7,10 @@ using SharpTask.Infrastructure.Repositories;
 
 namespace SharpTask.Infrastructure;
 
+/// <summary>
+/// Clase estática de extensión para configurar los servicios de infraestructura
+/// en el contenedor de dependencias de la aplicación.
+/// </summary>
 public static class DependencyInjection
 {
     /// <remarks>

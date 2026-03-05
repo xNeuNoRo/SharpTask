@@ -3,20 +3,40 @@ using SharpTask.Application.Interfaces.Repositories.Base;
 
 namespace SharpTask.Infrastructure.Repositories.Base;
 
+/// <summary>
+/// Clase base abstracta para repositorios que manejan archivos JSON,
+/// proporcionando métodos comunes para cargar, guardar, agregar,
+/// actualizar y eliminar items en un archivo JSON, con manejo de concurrencia mediante
+/// semaforos para evitar problemas al acceder a los archivos desde diferentes repositorios
+/// o hilos, y con opciones de serialización configuradas para facilitar la lectura y escritura
+/// de los archivos JSON, además de métodos adicionales para incluir items relacionados usando
+/// lógica de inclusión inyectada.
+/// </summary>
+/// <typeparam name="T">El tipo de objeto que se va a almacenar en el archivo JSON </typeparam>
 public abstract class JsonBaseRepo<T>
     where T : class // Restringimos T a ser una clase (referencia) para evitar problemas con tipos primitivos
 {
-    // Ruta del archivo JSON
+    /// <summary>
+    /// Ruta del archivo JSON donde se almacenan los items de tipo T.
+    /// </summary>
     protected readonly string _filePath;
 
-    // Cache para almacenar temporalmente los items cargados desde el archivo JSON
-    // y ahorrar lecturas al disco cuando se realizan multiples operaciones seguidas
+    /// <summary>
+    /// Cache para almacenar temporalmente los items cargados desde el archivo JSON
+    /// y ahorrar lecturas al disco cuando se realizan multiples operaciones seguidas.
+    /// </summary>
     protected List<T>? _cache;
 
-    // Opciones de serializacion JSON
+    /// <summary>
+    /// Opciones de serialización para configurar cómo se lee y escribe el JSON.
+    /// </summary>
     protected readonly JsonSerializerOptions _options;
 
-    // Referencia al semaforo de este archivo en el diccionario global del JsonFileLockManager para sincronizar el acceso a este archivo
+    /// <summary>
+    /// Refencia al semaforo específico para este archivo JSON, obtenido del JsonFileLockManager,
+    /// que se utiliza para sincronizar el acceso a este archivo y evitar problemas de concurrencia
+    /// al leer o escribir en el archivo desde diferentes repositorios o hilos.
+    /// </summary>
     private readonly SemaphoreSlim _fileLock;
 
     /// <remarks>
