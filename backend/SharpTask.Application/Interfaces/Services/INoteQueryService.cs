@@ -8,6 +8,7 @@ namespace SharpTask.Application.Interfaces.Services;
 /// </summary>
 public interface INoteQueryService
 {
-    Task<IEnumerable<NoteResponseDto>> GetNotesByTaskIdAsync(Guid taskId);
+    Task<IEnumerable<NoteResponseDto>> GetAllNotesAsync();
     Task<NoteResponseDto?> GetNoteByIdAsync(Guid id);
+    Task<IEnumerable<NoteResponseDto>> GetNotesByTaskIdAsync(Guid taskId);
 }

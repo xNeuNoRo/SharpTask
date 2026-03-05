@@ -36,7 +36,7 @@ public class NoteRepository : JsonBaseRepo<NoteItem>, INoteRepository
     /// </summary>
     /// <param name="id">El identificador único de la nota.</param>
     /// <returns>True si la nota existe, false en caso contrario.</returns>
-    public async Task<bool> ExistsAsync(Guid id) => (await GetByIdAsync(id)) != null;
+    public async Task<bool> ExistsAsync(Guid id) => (await base.FindAsync(x => x.Id == id)) != null;
 
     /// <summary>
     /// Agrega una nueva nota al JSON.
@@ -90,7 +90,6 @@ public class NoteRepository : JsonBaseRepo<NoteItem>, INoteRepository
     /// <returns>True si todas las notas fueron eliminadas correctamente, false en caso contrario.</returns>
     public async Task<bool> DeleteNotesByTaskIdAsync(Guid taskId)
     {
-       await base.DeleteAsync(x => x.TaskId == taskId);
-       return true;
+        return await base.DeleteAsync(x => x.TaskId == taskId);
     }
 }

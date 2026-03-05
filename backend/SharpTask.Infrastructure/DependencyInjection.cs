@@ -1,6 +1,8 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using SharpTask.Application.Interfaces.Repositories;
+using SharpTask.Domain.Interfaces;
+using SharpTask.Infrastructure.Providers;
 using SharpTask.Infrastructure.Repositories;
 
 namespace SharpTask.Infrastructure;
@@ -29,18 +31,14 @@ public static class DependencyInjection
         var tasksFilePath = Path.Combine(basePath, tasksRelativePath);
         var notesFilePath = Path.Combine(basePath, notesRelativePath);
 
-        // Registramos el repositorio de notas
-        services.AddScoped<INoteRepository>(provider =>
-        {
-            return new NoteRepository(notesFilePath);
-        });
+        // Registramos el proveedor de fecha y hora como un servicio singleton
+        services.AddSingleton<IDateTimeProvider, DateTimeProvider>();
 
-        // Registramos el repositorio de tareas, inyectando el repositorio de notas para manejar las relaciones entre tareas y notas
-        services.AddScoped<ITaskRepository>(provider =>
-        {
-            var noteRepo = provider.GetRequiredService<INoteRepository>();
-            return new TaskRepository(tasksFilePath, noteRepo);
-        });
+        // Registramos el repositorio de notas
+        services.AddScoped<INoteRepository>(provider => new NoteRepository(notesFilePath));
+
+        // Registramos el repositorio de tareas
+        services.AddScoped<ITaskRepository>(provider => new TaskRepository(tasksFilePath));
 
         // Retornamos el contenedor de servicios actualizado
         return services;

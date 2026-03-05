@@ -8,18 +8,14 @@ namespace SharpTask.Infrastructure.Repositories;
 
 public class TaskRepository : JsonBaseRepo<TaskItem>, ITaskRepository
 {
-    private readonly INoteRepository _noteRepository;
-
     /// <summary>
-    /// Constructor del repositorio de tareas que recibe la ruta del archivo JSON y una instancia del repositorio de notas para manejar las relaciones entre tareas y notas.
+    /// Constructor del repositorio de tareas que recibe la ruta del archivo JSON donde se almacenan las tareas. 
+    /// Este constructor llama al constructor de la clase base JsonBaseRepo para inicializar el repositorio 
+    /// con la ruta del archivo JSON proporcionada.
     /// </summary>
     /// <param name="filePath">La ruta del archivo JSON donde se almacenan las tareas.</param>
-    /// <param name="noteRepository">La instancia del repositorio de notas.</param>
-    public TaskRepository(string filePath, INoteRepository noteRepository)
-        : base(filePath)
-    {
-        _noteRepository = noteRepository;
-    }
+    public TaskRepository(string filePath)
+        : base(filePath) { }
 
     // =================================
     // Implementacion del CRUD basico para TaskItem
@@ -44,7 +40,7 @@ public class TaskRepository : JsonBaseRepo<TaskItem>, ITaskRepository
     /// </summary>
     /// <param name="id">El identificador único de la tarea.</param>
     /// <returns>True si la tarea existe, false en caso contrario.</returns>
-    public async Task<bool> ExistsAsync(Guid id) => (await GetByIdAsync(id)) != null;
+    public async Task<bool> ExistsAsync(Guid id) => (await base.FindAsync(x => x.Id == id)) != null;
 
     /// <summary>
     /// Agrega una nueva tarea al JSON.
@@ -69,54 +65,20 @@ public class TaskRepository : JsonBaseRepo<TaskItem>, ITaskRepository
     }
 
     /// <summary>
-    /// Elimina una tarea y sus notas relacionadas por su ID del JSON.
+    /// Elimina una tarea del JSON por su ID
     /// </summary>
     /// <param name="id">El identificador único de la tarea a eliminar.</param>
-    /// <returns>True si la tarea y sus notas fueron eliminadas, false en caso contrario.</returns>
+    /// <returns>True si la tarea fue eliminada, false en caso contrario.</returns>
     public async Task<bool> DeleteAsync(Guid id)
     {
-        // Primero eliminamos la tarea del JSON
-        var deleted = await base.DeleteAsync(x => x.Id == id);
-
-        // Si la tarea fue eliminada exitosamente, también eliminamos las notas relacionadas a esta tarea
-        if (deleted)
-        {
-            // Elimina las notas relacionadas a esta tarea
-            await _noteRepository.DeleteNotesByTaskIdAsync(id);
-        }
-
         // Retorna el resultado de la eliminación de la tarea
-        return deleted;
+        return await base.DeleteAsync(x => x.Id == id);
     }
 
     // =================================
     // Implementacion de las operaciones especificas
     // definidas en ITaskRepository para TaskItem
     // =================================
-
-    /// <summary>
-    /// Obtiene una tarea por su ID, incluyendo sus notas relacionadas.
-    /// </summary>
-    /// <param name="id">El identificador único de la tarea.</param>
-    /// <returns>La tarea encontrada con sus notas incluidas o null si no existe.</returns>
-    public async Task<TaskItem?> GetTaskWithNotesAsync(Guid id)
-    {
-        // Primero obtenemos la tarea básica sin las notas
-        var task = await base.FindAsync(x => x.Id == id);
-
-        // Si la tarea no existe, retornamos null
-        if (task is null)
-            return null;
-
-        // Luego obtenemos las notas relacionadas a esta tarea usando el repositorio de notas
-        var notes = await _noteRepository.GetNotesByTaskIdAsync(id);
-
-        // Asignamos las notas obtenidas a la propiedad Notes de la tarea
-        task.Notes = notes.ToList();
-
-        // Finalmente, retornamos la tarea con sus notas incluidas
-        return task;
-    }
 
     /// <summary>
     /// Obtiene todas las tareas que tienen un estado específico.

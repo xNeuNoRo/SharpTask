@@ -10,7 +10,7 @@ namespace SharpTask.Application.Interfaces.Services;
 public interface ITaskQueryService
 {
     Task<IEnumerable<TaskResponseDto>> GetAllTasksAsync();
-    Task<TaskResponseDto?> GetTaskByIdAsync(Guid id);
+    Task<TaskDetailResponseDto?> GetTaskByIdAsync(Guid id);
     Task<IEnumerable<TaskResponseDto>> GetTasksByStatusAsync(TaskState status);
     Task<IEnumerable<TaskResponseDto>> SearchTasksAsync(string keyword);
 }
