@@ -27,13 +27,7 @@ public class ExceptionMiddleware
         }
         catch (Exception ex)
         {
-            // Si ocurre una excepción, la registramos en el log para debug posterior
-            _logger.LogError(
-                ex,
-                "Ha ocurrido un error inesperado en el pipeline de procesamiento de la solicitud."
-            );
-
-            // Luego, manejamos la excepción y construimos una respuesta HTTP adecuada para el cliente
+            // Manejamos la excepción y construimos una respuesta HTTP adecuada para el cliente
             await HandleExceptionAsync(context, ex, _logger);
         }
     }
