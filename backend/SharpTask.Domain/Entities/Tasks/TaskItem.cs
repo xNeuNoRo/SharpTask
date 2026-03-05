@@ -24,7 +24,10 @@ public class TaskItem : BaseEntity
     /// <example>Comprar leche, pan y huevos para la semana.</example>
     public string? Description { get; set; }
 
-    /// <summary> Estado actual de la tarea, representado por el enum TaskState, que puede ser Pending, InProgress o Completed. </summary>
+    /// <summary>
+    /// Estado actual de la tarea, representado por el enum TaskState,
+    /// que puede ser Pending, InProgress, OnHold, UnderReview o Completed.
+    /// </summary>
     /// <example>Pending</example>
     public TaskState Status { get; set; }
 
