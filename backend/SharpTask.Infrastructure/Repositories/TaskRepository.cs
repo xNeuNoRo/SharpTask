@@ -38,7 +38,7 @@ public class TaskRepository : JsonBaseRepo<TaskItem>, ITaskRepository
     /// </summary>
     /// <param name="id">El identificador único de la tarea.</param>
     /// <returns>True si la tarea existe, false en caso contrario.</returns>
-    public async Task<bool> ExistsAsync(Guid id) => (await GetByIdAsync(id)) != null;
+    public async Task<bool> ExistsAsync(Guid id) => (await base.FindAsync(x => x.Id == id)) != null;
 
     /// <summary>
     /// Agrega una nueva tarea al JSON.
