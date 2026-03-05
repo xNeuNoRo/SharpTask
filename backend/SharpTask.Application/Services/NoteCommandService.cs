@@ -100,11 +100,9 @@ public class NoteCommandService : INoteCommandService
 
     /// <summary>
     /// Elimina una nota por su ID utilizando el repositorio de notas.
-    /// Verifica si la nota existe antes de intentar eliminarla y devuelve false si no se puede eliminar.
-    /// Si la nota se elimina correctamente, devuelve true.
     /// </summary>
     /// <param name="id">El ID de la nota a eliminar.</param>
-    /// <returns>True si la nota se elimina correctamente, false en caso contrario.</returns>
+    /// <returns>True si la nota existe y se elimino correctamente, false en caso contrario.</returns>
     public async Task<bool> DeleteNoteAsync(Guid id)
     {
         return await _noteRepo.DeleteAsync(id);
