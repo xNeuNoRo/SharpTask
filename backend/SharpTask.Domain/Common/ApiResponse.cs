@@ -20,7 +20,6 @@ public class ApiResponse<T>
     /// <summary>
     /// Contiene los datos de la respuesta
     /// </summary>
-    /// <example>{ "id": "123", "title": "Tarea de ejemplo" }</example>
     public T? Data { get; private set; }
 
     /// <summary>
