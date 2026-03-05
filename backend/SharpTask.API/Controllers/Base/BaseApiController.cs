@@ -96,11 +96,36 @@ public abstract class BaseApiController : ControllerBase
         return Success(data);
     }
 
+    /// <summary>
+    /// Método de conveniencia para devolver una respuesta exitosa o un error 404 Not Found con el formato de ApiResponse,
+    /// recibe un booleano que indica si la condición se cumple o no, y si no
+    /// se cumple, devuelve un IActionResult con un ApiResponse de error 404 Not Found
+    /// con el código de error y mensaje proporcionados, y si se cumple,
+    /// devuelve un IActionResult con un ApiResponse exitoso.
+    /// </summary>
+    /// <param name="condition">La condición a evaluar</param>
+    /// <param name="errorCode">El código de error</param>
+    /// <param name="message">El mensaje de error</param>
+    /// <returns>Un IActionResult con la respuesta correspondiente</returns>
+    protected IActionResult SuccessOrNotFound(
+        bool condition,
+        string errorCode = ErrorCodes.NotFound,
+        string message = "El recurso solicitado no fue encontrado."
+    )
+    {
+        if (condition)
+        {
+            return Ok(ApiResponse<object>.Success(new { success = true }));
+        }
+
+        return NotFound(ApiResponse<object>.Failure(errorCode, message));
+    }
+
     /// <remarks>
     /// Método de conveniencia para devolver una respuesta exitosa
     /// o un error de validación con el formato de ApiResponse,
     /// recibe un booleano que indica si la operación fue exitosa o no, y si no fue exitosa,
-    /// devuelve un IActionResult con unApiResponse de error 400 Bad Request
+    /// devuelve un IActionResult con un ApiResponse de error 400 Bad Request
     /// con el código de error y mensaje proporcionados, y si fue exitosa, devuelve un
     /// IActionResult con un ApiResponse exitoso que contiene un objeto con una propiedad "success" en true.
     /// </remarks>
