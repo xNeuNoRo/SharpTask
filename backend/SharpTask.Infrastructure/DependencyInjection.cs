@@ -35,11 +35,10 @@ public static class DependencyInjection
             return new NoteRepository(notesFilePath);
         });
 
-        // Registramos el repositorio de tareas, inyectando el repositorio de notas para manejar las relaciones entre tareas y notas
+        // Registramos el repositorio de tareas
         services.AddScoped<ITaskRepository>(provider =>
         {
-            var noteRepo = provider.GetRequiredService<INoteRepository>();
-            return new TaskRepository(tasksFilePath, noteRepo);
+            return new TaskRepository(tasksFilePath);
         });
 
         // Retornamos el contenedor de servicios actualizado

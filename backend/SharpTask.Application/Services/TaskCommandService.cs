@@ -3,6 +3,7 @@ using SharpTask.Application.DTOs.Task;
 using SharpTask.Application.Interfaces.Repositories;
 using SharpTask.Application.Interfaces.Services;
 using SharpTask.Domain.Entities.Tasks;
+using SharpTask.Domain.Exceptions;
 using SharpTask.Domain.Interfaces;
 
 namespace SharpTask.Application.Services;
@@ -20,6 +21,7 @@ public class TaskCommandService : ITaskCommandService
     /// Este servicio se enfoca exclusivamente en las operaciones de escritura.
     /// </summary>
     /// <param name="taskRepo">La instancia del repositorio de tareas.</param>
+    /// <param name="noteRepo">La instancia del repositorio de notas para manejar las relaciones entre tareas y notas.</param>
     /// <param name="dateTimeProvider">La instancia del proveedor de fecha y hora.</param>
     public TaskCommandService(
         ITaskRepository taskRepo,
@@ -60,6 +62,16 @@ public class TaskCommandService : ITaskCommandService
     /// <returns>El DTO de respuesta con los datos de la tarea actualizada o null si no se pudo actualizar.</returns>
     public async Task<TaskResponseDto?> UpdateTaskAsync(Guid id, UpdateTaskRequestDto request)
     {
+        // Validamos que el estado de la tarea esté presente en el DTO de solicitud,
+        // ya que es un campo obligatorio para actualizar la tarea
+        if (!request.Status.HasValue)
+        {
+            throw AppException.BadRequest(
+                "El estado de la tarea es obligatorio para actualizar la tarea.",
+                ErrorCodes.ValidationError
+            );
+        }
+
         // Obtenemos la tarea existente por su ID para verificar si existe antes de intentar actualizarla
         var existingTask = await _taskRepo.GetByIdAsync(id);
 

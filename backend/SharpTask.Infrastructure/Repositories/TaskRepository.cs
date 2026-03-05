@@ -9,7 +9,9 @@ namespace SharpTask.Infrastructure.Repositories;
 public class TaskRepository : JsonBaseRepo<TaskItem>, ITaskRepository
 {
     /// <summary>
-    /// Constructor del repositorio de tareas que recibe la ruta del archivo JSON y una instancia del repositorio de notas para manejar las relaciones entre tareas y notas.
+    /// Constructor del repositorio de tareas que recibe la ruta del archivo JSON donde se almacenan las tareas. 
+    /// Este constructor llama al constructor de la clase base JsonBaseRepo para inicializar el repositorio 
+    /// con la ruta del archivo JSON proporcionada.
     /// </summary>
     /// <param name="filePath">La ruta del archivo JSON donde se almacenan las tareas.</param>
     public TaskRepository(string filePath)

@@ -19,6 +19,7 @@ public class NoteCommandService : INoteCommandService
     /// para acceder a los datos de las notas y proporcionar la funcionalidad de comando relacionada con las notas.
     /// </summary>
     /// <param name="noteRepo">La instancia del repositorio de notas.</param>
+    /// <param name="taskRepo">La instancia del repositorio de tareas.</param>
     /// <param name="dateTimeProvider">La instancia del proveedor de fechas y horas.</param>
     public NoteCommandService(
         INoteRepository noteRepo,
@@ -91,10 +92,10 @@ public class NoteCommandService : INoteCommandService
         existingNote.UpdatedAt = _dateTimeProvider.UtcNow;
 
         // Actualizamos la nota en el repositorio y obtenemos la nota actualizada
-        await _noteRepo.UpdateAsync(existingNote);
+        var updatedNote = await _noteRepo.UpdateAsync(existingNote);
 
         // Mapeamos la nota actualizada a un DTO de respuesta para ser consumido por el frontend y lo devolvemos
-        return existingNote.Adapt<NoteResponseDto>();
+        return updatedNote?.Adapt<NoteResponseDto>();
     }
 
     /// <summary>

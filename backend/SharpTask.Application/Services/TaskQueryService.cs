@@ -35,7 +35,8 @@ public class TaskQueryService : ITaskQueryService
     }
 
     /// <summary>
-    /// Obtiene una tarea por su ID, mapeándola a un DTO de detalle de tarea para proporcionar
+    /// Obtiene una tarea por su ID, mapeándola a un DTO de detalle de tarea para proporcionar 
+    /// información completa de la tarea, incluyendo sus notas relacionadas, para ser consumido por el frontend.
     /// </summary>
     /// <param name="id">El ID de la tarea a obtener.</param>
     /// <returns>Un DTO de detalle de tarea o null si no se encuentra.</returns>
