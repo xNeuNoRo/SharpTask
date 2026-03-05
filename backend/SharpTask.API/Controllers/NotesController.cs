@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using SharpTask.API.Controllers.Base;
 using SharpTask.Application.DTOs.Note;
 using SharpTask.Application.Interfaces.Services;
+using SharpTask.Domain.Common;
 using SharpTask.Domain.Exceptions;
 
 namespace SharpTask.API.Controllers;
@@ -46,6 +47,10 @@ public class NotesController : BaseApiController
     /// <param name="taskId">ID de la tarea a la que pertenecen las notas</param>
     /// <returns>Una lista de notas asociadas a la tarea especificada</returns>
     [HttpGet]
+    [ProducesResponseType(
+        typeof(ApiResponse<IEnumerable<NoteResponseDto>>),
+        StatusCodes.Status200OK
+    )]
     public async Task<IActionResult> GetAll(Guid taskId)
     {
         var notes = await _queryService.GetNotesByTaskIdAsync(taskId);
@@ -65,6 +70,8 @@ public class NotesController : BaseApiController
     /// <param name="id">ID de la nota a obtener</param>
     /// <returns>La nota especificada por el ID en la ruta</returns>
     [HttpGet("{id:guid}")]
+    [ProducesResponseType(typeof(ApiResponse<NoteResponseDto>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetById(Guid taskId, Guid id)
     {
         var note = await _queryService.GetNoteByIdAsync(id);
@@ -84,6 +91,8 @@ public class NotesController : BaseApiController
     /// <param name="request">Datos de la nota a crear</param>
     /// <returns>La nota creada</returns>
     [HttpPost]
+    [ProducesResponseType(typeof(ApiResponse<NoteResponseDto>), StatusCodes.Status201Created)]
+    [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> Create(Guid taskId, [FromBody] CreateNoteRequestDto request)
     {
         var note = await _commandService.CreateNoteAsync(taskId, request);
@@ -107,6 +116,9 @@ public class NotesController : BaseApiController
     /// <param name="request">Datos actualizados de la nota</param>
     /// <returns>La nota actualizada</returns>
     [HttpPut("{id:guid}")]
+    [ProducesResponseType(typeof(ApiResponse<NoteResponseDto>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> Update(
         Guid taskId,
         Guid id,
@@ -136,6 +148,9 @@ public class NotesController : BaseApiController
     /// <param name="id">ID de la nota a eliminar</param>
     /// <returns>Una respuesta HTTP indicando el resultado de la operación</returns>
     [HttpDelete("{id:guid}")]
+    [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Delete(Guid taskId, Guid id)
     {
         var deleted = await _commandService.DeleteNoteAsync(id);

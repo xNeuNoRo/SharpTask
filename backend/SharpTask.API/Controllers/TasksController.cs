@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using SharpTask.API.Controllers.Base;
 using SharpTask.Application.DTOs.Task;
 using SharpTask.Application.Interfaces.Services;
+using SharpTask.Domain.Common;
 using SharpTask.Domain.Enums;
 using SharpTask.Domain.Exceptions;
 
@@ -39,6 +40,10 @@ public class TasksController : BaseApiController
     /// <param name="status">El estado de las tareas a obtener (opcional)</param>
     /// <returns>Una respuesta HTTP con el listado de tareas</returns>
     [HttpGet]
+    [ProducesResponseType(
+        typeof(ApiResponse<IEnumerable<TaskResponseDto>>),
+        StatusCodes.Status200OK
+    )]
     public async Task<IActionResult> GetAll([FromQuery] TaskState? status)
     {
         var tasks = status.HasValue
@@ -54,6 +59,8 @@ public class TasksController : BaseApiController
     /// <param name="id">El ID de la tarea a obtener</param>
     /// <returns>Una respuesta HTTP con la tarea obtenida o un error 404 si no se encuentra</returns>
     [HttpGet("{id:guid}")]
+    [ProducesResponseType(typeof(ApiResponse<TaskDetailResponseDto>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetById(Guid id)
     {
         var task = await _queryService.GetTaskByIdAsync(id);
@@ -68,6 +75,8 @@ public class TasksController : BaseApiController
     /// <param name="request">Los datos de la tarea a crear</param>
     /// <returns>Una respuesta HTTP con la tarea creada</returns>
     [HttpPost]
+    [ProducesResponseType(typeof(ApiResponse<TaskResponseDto>), StatusCodes.Status201Created)]
+    [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> Create([FromBody] CreateTaskRequestDto request)
     {
         var task = await _commandService.CreateTaskAsync(request);
@@ -82,6 +91,9 @@ public class TasksController : BaseApiController
     /// <param name="request">Los datos actualizados de la tarea</param>
     /// <returns>Una respuesta HTTP con la tarea actualizada o un error 404 si no se encuentra</returns>
     [HttpPut("{id:guid}")]
+    [ProducesResponseType(typeof(ApiResponse<TaskResponseDto>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Update(Guid id, [FromBody] UpdateTaskRequestDto request)
     {
         var task = await _commandService.UpdateTaskAsync(id, request);
@@ -103,6 +115,9 @@ public class TasksController : BaseApiController
     /// <param name="request">Los datos del nuevo estado de la tarea</param>
     /// <returns>Una respuesta HTTP con la tarea actualizada o un error 404 si no se encuentra</returns>
     [HttpPatch("{id:guid}/status")]
+    [ProducesResponseType(typeof(ApiResponse<TaskResponseDto>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status404NotFound)]
     public async Task<IActionResult> UpdateStatus(
         Guid id,
         [FromBody] UpdateTaskStatusRequestDto request
@@ -127,6 +142,8 @@ public class TasksController : BaseApiController
     /// <param name="id">El ID de la tarea a actualizar</param>
     /// <returns>Una respuesta HTTP con la tarea actualizada o un error 404 si no se encuentra</returns>
     [HttpPatch("{id:guid}/complete")]
+    [ProducesResponseType(typeof(ApiResponse<TaskResponseDto>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Complete(Guid id)
     {
         var task = await _commandService.UpdateTaskStatusAsync(
@@ -148,6 +165,8 @@ public class TasksController : BaseApiController
     /// <param name="id">El ID de la tarea a eliminar</param>
     /// <returns>Una respuesta HTTP con el resultado de la operación de eliminación o un error 404 si no se encuentra</returns>
     [HttpDelete("{id:guid}")]
+    [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Delete(Guid id)
     {
         var deleted = await _commandService.DeleteTaskAsync(id);
@@ -167,6 +186,10 @@ public class TasksController : BaseApiController
     /// <param name="keyword">La palabra clave para buscar en el título o descripción de las tareas</param>
     /// <returns>Una lista de tareas que coinciden con la palabra clave o una lista vacía si no se encuentran coincidencias</returns>
     [HttpGet("search")]
+    [ProducesResponseType(
+        typeof(ApiResponse<IEnumerable<TaskResponseDto>>),
+        StatusCodes.Status200OK
+    )]
     public async Task<IActionResult> SearchByKeyword([FromQuery] string keyword)
     {
         var tasks = await _queryService.SearchTasksAsync(keyword);
