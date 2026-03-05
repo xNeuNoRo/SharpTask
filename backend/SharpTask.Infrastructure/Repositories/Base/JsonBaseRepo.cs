@@ -9,7 +9,7 @@ public abstract class JsonBaseRepo<T>
     // Ruta del archivo JSON
     protected readonly string _filePath;
 
-    // Cache para almacenar las categorias en memoria
+    // Cache para almacenar temporalmente los items cargados desde el archivo JSON
     // y ahorrar lecturas al disco cuando se realizan multiples operaciones seguidas
     protected List<T>? _cache;
 
