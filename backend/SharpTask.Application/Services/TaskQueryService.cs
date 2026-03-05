@@ -7,6 +7,12 @@ using SharpTask.Domain.Enums;
 
 namespace SharpTask.Application.Services;
 
+/// <summary>
+/// Servicio de consultas para las tareas, encargado de manejar la lógica de 
+/// negocio relacionada con la obtención de tareas, incluyendo la recuperación 
+/// de todas las tareas, la obtención de una tarea por su ID, la obtención de 
+/// tareas filtradas por estado y la búsqueda de tareas por palabra clave.
+/// </summary>
 public class TaskQueryService : ITaskQueryService
 {
     private readonly ITaskRepository _taskRepo;

@@ -10,6 +10,10 @@ namespace SharpTask.Application.Validators.Base;
 public class NoteRequestBaseValidator<T> : AbstractValidator<T>
     where T : NoteRequestBase
 {
+    /// <summary>
+    /// Constructor que define las reglas de validación para las solicitudes de notas, 
+    /// asegurando que el contenido de la nota no esté vacío y no exceda los 2048 caracteres.
+    /// </summary>
     public NoteRequestBaseValidator()
     {
         RuleFor(x => x.Content)
