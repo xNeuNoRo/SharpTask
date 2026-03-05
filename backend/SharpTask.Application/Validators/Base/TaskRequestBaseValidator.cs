@@ -3,9 +3,9 @@ using SharpTask.Application.DTOs.Base;
 
 namespace SharpTask.Application.Validators.Base;
 
-/// <summary>
+/// <remarks>
 /// Clase base para validadores de solicitudes relacionadas con tareas, utilizando FluentValidation.
-/// </summary>
+/// </remarks>
 /// <typeparam name="T">El tipo de solicitud a validar.</typeparam>
 public class TaskRequestBaseValidator<T> : AbstractValidator<T>
     where T : TaskRequestBase

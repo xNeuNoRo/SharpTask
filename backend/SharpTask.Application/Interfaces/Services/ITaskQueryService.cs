@@ -3,10 +3,10 @@ using SharpTask.Domain.Enums;
 
 namespace SharpTask.Application.Interfaces.Services;
 
-/// <summary>
+/// <remarks>
 /// Interfaz para el servicio de consultas de tareas (aplicando CQRS) que define los metodos
 /// para obtener informacion relacionada con las tareas sin modificar el estado de la app.
-/// </summary>
+/// </remarks>
 public interface ITaskQueryService
 {
     Task<IEnumerable<TaskResponseDto>> GetAllTasksAsync();

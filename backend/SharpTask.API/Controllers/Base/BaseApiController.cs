@@ -10,10 +10,10 @@ namespace SharpTask.API.Controllers.Base;
 [Route("api/v1/[controller]")] // Esto es para que la ruta de cada controlador sea "api/v1/nombre-del-controlador", donde "nombre-del-controlador" es el nombre de la clase del controlador sin el sufijo "Controller"
 public abstract class BaseApiController : ControllerBase
 {
-    /// <summary>
+    /// <remarks>
     /// Método de conveniencia para devolver una respuesta exitosa con el formato de ApiResponse,
     /// recibe los datos de la respuesta y devuelve un IActionResult con un ApiResponse exitoso que contiene esos datos.
-    /// </summary>
+    /// </remarks>
     /// <typeparam name="T">El tipo de datos de la respuesta</typeparam>
     /// <param name="data">Los datos de la respuesta</param>
     /// <returns>Un IActionResult con un ApiResponse exitoso</returns>
@@ -22,22 +22,22 @@ public abstract class BaseApiController : ControllerBase
         return Ok(ApiResponse<T>.Success(data));
     }
 
-    /// <summary>
+    /// <remarks>
     /// Método de conveniencia para devolver una respuesta exitosa sin datos, con el formato de ApiResponse,
     /// devuelve un IActionResult con un ApiResponse exitoso que no contiene datos (Data es null).
-    /// </summary>
+    /// </remarks>
     /// <returns>Un IActionResult con un ApiResponse exitoso</returns>
     protected IActionResult Success()
     {
         return Ok(ApiResponse<object>.Success(null!));
     }
 
-    /// <summary>
+    /// <remarks>
     /// Método de conveniencia para devolver una respuesta exitosa con el formato de ApiResponse,
     /// recibe el nombre de la acción para obtener el recurso creado, los valores de la ruta
     /// y los datos del recurso creado, y devuelve un IActionResult con un ApiResponse exitoso que contiene esos datos,
     /// además de incluir en la respuesta la ruta para obtener el recurso creado en el header "Location" de la respuesta.
-    /// </summary>
+    /// </remarks>
     /// <typeparam name="T">El tipo de datos del recurso creado</typeparam>
     /// <param name="actionName">El nombre de la acción para obtener el recurso creado</param>
     /// <param name="routeValues">Los valores de la ruta para construir la URL del recurso creado</param>
@@ -60,14 +60,14 @@ public abstract class BaseApiController : ControllerBase
         return CreatedAtAction(actionName, routeValues, ApiResponse<T>.Success(data));
     }
 
-    /// <summary>
+    /// <remarks>
     /// Método de conveniencia para devolver una respuesta exitosa
     /// o un error 404 Not Found con el formato de ApiResponse,
     /// recibe los datos de la respuesta y, si son nulos, devuelve
     /// un IActionResult con un ApiResponse de error 404 Not Found,
     /// y si no son nulos, devuelve un IActionResult con un ApiResponse
     /// exitoso que contiene esos datos.
-    /// </summary>
+    /// </remarks>
     /// <typeparam name="T">El tipo de datos de la respuesta</typeparam>
     /// <param name="data">Los datos de la respuesta</param>
     /// <param name="errorCode">El código de error</param>
@@ -91,14 +91,14 @@ public abstract class BaseApiController : ControllerBase
         return Success(data);
     }
 
-    /// <summary>
+    /// <remarks>
     /// Método de conveniencia para devolver una respuesta exitosa
     /// o un error de validación con el formato de ApiResponse,
     /// recibe un booleano que indica si la operación fue exitosa o no, y si no fue exitosa,
     /// devuelve un IActionResult con unApiResponse de error 400 Bad Request
     /// con el código de error y mensaje proporcionados, y si fue exitosa, devuelve un
     /// IActionResult con un ApiResponse exitoso que contiene un objeto con una propiedad "success" en true.
-    /// </summary>
+    /// </remarks>
     /// <param name="result">Resultado de la operación</param>
     /// <param name="errorCode">Código de error</param>
     /// <param name="message">Mensaje de error</param>
@@ -114,12 +114,12 @@ public abstract class BaseApiController : ControllerBase
         return Success(new { success = true });
     }
 
-    /// <summary>
+    /// <remarks>
     /// Método de conveniencia para devolver una respuesta de error con el formato de ApiResponse,
     /// recibe un código de error, un mensaje y un código de estado HTTP (por defecto 400 Bad Request),
     /// y devuelve un IActionResult con un ApiResponse de error
     /// que contiene el código de error y el mensaje proporcionados.
-    /// </summary>
+    /// </remarks>
     /// <param name="errorCode">Código de error</param>
     /// <param name="message">Mensaje de error</param>
     /// <param name="statusCode">Código de estado HTTP</param>
@@ -130,12 +130,12 @@ public abstract class BaseApiController : ControllerBase
         return StatusCode(statusCode, response);
     }
 
-    /// <summary>
+    /// <remarks>
     /// Método de conveniencia para devolver una respuesta de error por conflicto con el formato de ApiResponse,
     /// recibe un mensaje y un código de error (por defecto "ResourceConflict"),
     /// y devuelve un IActionResult con un ApiResponse de error
     /// que contiene el código de error y el mensaje proporcionados, con un código de estado HTTP 409 Conflict.
-    /// </summary>
+    /// </remarks>
     /// <param name="message">Mensaje de error</param>
     /// <param name="errorCode">Código de error</param>
     /// <returns>Un IActionResult con la respuesta correspondiente</returns>

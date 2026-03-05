@@ -6,12 +6,12 @@ namespace SharpTask.API.Extensions;
 
 public static class ApiBehaviorOptionsExtensions
 {
-    /// <summary>
+    /// <remarks>
     /// Configura la respuesta de error personalizada para los casos en que el modelo de datos no sea válido,
     /// utilizando el formato de ApiResponse para devolver una respuesta consistente y estructurada
     /// lo que facilita el manejo de errores en el cliente y proporciona información detallada
     /// sobre los errores de validación que ocurrieron.
-    /// </summary>
+    /// </remarks>
     /// <param name="options"></param>
     public static void ConfigureInvalidModelStateResponse(this ApiBehaviorOptions options)
     {

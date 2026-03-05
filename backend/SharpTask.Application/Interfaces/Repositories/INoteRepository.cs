@@ -3,10 +3,10 @@ using SharpTask.Domain.Entities;
 
 namespace SharpTask.Application.Interfaces.Repositories;
 
-/// <summary>
+/// <remarks>
 /// Interfaz para el repositorio de notas que extiende la funcionalidad 
 /// del repositorio base con operaciones específicas para las notas.
-/// </summary>
+/// </remarks>
 public interface INoteRepository : IBaseRepository<NoteItem>
 {
     Task<IEnumerable<NoteItem>> GetNotesByTaskIdAsync(Guid taskId);

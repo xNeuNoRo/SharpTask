@@ -9,9 +9,9 @@ namespace SharpTask.Infrastructure;
 
 public static class DependencyInjection
 {
-    /// <summary>
+    /// <remarks>
     /// Extensión para configurar los servicios de infraestructura en el contenedor de dependencias.
-    /// </summary>
+    /// </remarks>
     /// <param name="services">El contenedor de servicios de la aplicación.</param>
     /// <param name="configuration">La configuración de la aplicación.</param>
     /// <returns>El contenedor de servicios actualizado.</returns>

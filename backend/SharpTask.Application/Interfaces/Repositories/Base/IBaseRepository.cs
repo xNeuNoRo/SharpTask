@@ -1,8 +1,8 @@
 namespace SharpTask.Application.Interfaces.Repositories.Base;
 
-/// <summary>
+/// <remarks>
 /// Interfaz generica para el repositorio base que define las operaciones CRUD comunes para cualquier entidad.
-/// </summary>
+/// </remarks>
 /// <typeparam name="T">Tipo de entidad que implementa esta interfaz</typeparam>
 public interface IBaseRepository<T>
     where T : class

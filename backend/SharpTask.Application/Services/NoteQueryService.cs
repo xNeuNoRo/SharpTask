@@ -10,20 +10,20 @@ public class NoteQueryService : INoteQueryService
 {
     private readonly INoteRepository _noteRepo;
 
-    /// <summary>
+    /// <remarks>
     /// Constructor del servicio de consultas de notas que recibe una instancia del 
     /// repositorio de notas para acceder a los datos de las notas y proporcionar la 
     /// funcionalidad de consulta relacionada con las notas.
-    /// </summary>
+    /// </remarks>
     /// <param name="noteRepo">La instancia del repositorio de notas.</param>
     public NoteQueryService(INoteRepository noteRepo)
     {
         _noteRepo = noteRepo;
     }
 
-    /// <summary>
+    /// <remarks>
     /// Obtiene todas las notas de la base de datos y las mapea a DTOs de respuesta para ser consumidos por el frontend.
-    /// </summary>
+    /// </remarks>
     /// <returns>Una tarea que representa la operación asincrónica.</returns>
     public async Task<IEnumerable<NoteResponseDto>> GetAllNotesAsync()
     {
@@ -31,10 +31,10 @@ public class NoteQueryService : INoteQueryService
         return notes.Adapt<IEnumerable<NoteResponseDto>>();
     }
 
-    /// <summary>
+    /// <remarks>
     /// Obtiene una nota por su ID, mapeándola a un DTO de respuesta de nota para proporcionar
     /// la información necesaria al frontend. Si la nota no se encuentra, devuelve null.
-    /// </summary>
+    /// </remarks>
     /// <param name="id">El ID de la nota a obtener.</param>
     /// <returns>
     /// Una tarea que representa la operación asincrónica,
@@ -46,11 +46,11 @@ public class NoteQueryService : INoteQueryService
         return note?.Adapt<NoteResponseDto>();
     }
 
-    /// <summary>
+    /// <remarks>
     /// Obtiene las notas asociadas a una tarea específica por su ID,
     /// mapeándolas a DTOs de respuesta de notas para ser consumidos por el frontend.
     /// Si no se encuentran notas para la tarea, devuelve una lista vacía.
-    /// </summary>
+    /// </remarks>
     /// <param name="taskId">El ID de la tarea para la cual obtener notas.</param>
     /// <returns>Una lista de DTOs de respuesta de notas.</returns>
     public async Task<IEnumerable<NoteResponseDto>> GetNotesByTaskIdAsync(Guid taskId)

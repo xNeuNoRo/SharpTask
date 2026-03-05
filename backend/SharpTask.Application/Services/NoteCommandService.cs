@@ -14,10 +14,10 @@ public class NoteCommandService : INoteCommandService
     private readonly INoteRepository _noteRepo;
     private readonly ITaskRepository _taskRepo;
 
-    /// <summary>
+    /// <remarks>
     /// Constructor del servicio de comandos de notas que recibe una instancia del repositorio de notas
     /// para acceder a los datos de las notas y proporcionar la funcionalidad de comando relacionada con las notas.
-    /// </summary>
+    /// </remarks>
     /// <param name="noteRepo">La instancia del repositorio de notas.</param>
     /// <param name="taskRepo">La instancia del repositorio de tareas.</param>
     /// <param name="dateTimeProvider">La instancia del proveedor de fechas y horas.</param>
@@ -32,10 +32,10 @@ public class NoteCommandService : INoteCommandService
         _dateTimeProvider = dateTimeProvider;
     }
 
-    /// <summary>
+    /// <remarks>
     /// Crea una nueva nota asociada a una tarea específica utilizando los datos proporcionados en el DTO de solicitud.
     /// Mapea la nota creada a un DTO de respuesta para ser consumido por el frontend y lo devuelve.
-    /// </summary>
+    /// </remarks>
     /// <param name="taskId">El ID de la tarea a la que se asociará la nota.</param>
     /// <param name="request">El DTO de solicitud con los datos de la nota a crear.</param>
     /// <returns>El DTO de respuesta con los datos de la nota creada.</returns>
@@ -67,11 +67,11 @@ public class NoteCommandService : INoteCommandService
         return createdNote.Adapt<NoteResponseDto>();
     }
 
-    /// <summary>
+    /// <remarks>
     /// Actualiza una nota existente utilizando los datos proporcionados en el DTO de solicitud.
     /// Verifica si la nota existe antes de intentar actualizarla y devuelve null si no se puede actualizar.
     /// Mapea la nota actualizada a un DTO de respuesta para ser consumido por el frontend y lo devuelve.
-    /// </summary>
+    /// </remarks>
     /// <param name="id">El ID de la nota a actualizar.</param>
     /// <param name="request">El DTO de solicitud con los datos de la nota a actualizar.</param>
     /// <returns>El DTO de respuesta con los datos de la nota actualizada o null si no se puede actualizar.</returns>
@@ -98,9 +98,9 @@ public class NoteCommandService : INoteCommandService
         return updatedNote?.Adapt<NoteResponseDto>();
     }
 
-    /// <summary>
+    /// <remarks>
     /// Elimina una nota por su ID utilizando el repositorio de notas.
-    /// </summary>
+    /// </remarks>
     /// <param name="id">El ID de la nota a eliminar.</param>
     /// <returns>True si la nota existe y se elimino correctamente, false en caso contrario.</returns>
     public async Task<bool> DeleteNoteAsync(Guid id)

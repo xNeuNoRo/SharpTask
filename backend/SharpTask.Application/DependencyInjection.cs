@@ -8,9 +8,9 @@ namespace SharpTask.Application;
 
 public static class DependencyInjection
 {
-    /// <summary>
+    /// <remarks>
     /// Extensión para configurar los servicios de la capa de aplicación en el contenedor de dependencias.
-    /// </summary>
+    /// </remarks>
     /// <param name="services">El contenedor de servicios de la aplicación</param>
     /// <returns>El contenedor de servicios actualizado.</returns>
     public static IServiceCollection AddApplicationServices(this IServiceCollection services)

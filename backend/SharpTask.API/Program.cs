@@ -39,6 +39,10 @@ builder.Services.AddCors(options =>
     );
 });
 
+// Configuramos el enrutamiento para que las URLs de los endpoints sean en minúsculas,
+// lo que es una buena práctica para la consistencia y legibilidad de las URLs
+builder.Services.AddRouting(options => options.LowercaseUrls = true);
+
 // Configuramos la respuesta de error personalizada para los casos en que el modelo de datos no sea válido
 // (por ejemplo, si faltan campos requeridos o si los datos no cumplen con las validaciones definidas en los DTOs)
 builder

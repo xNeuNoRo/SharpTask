@@ -4,9 +4,9 @@ namespace SharpTask.API.Extensions;
 
 public static class MvcOptionsExtensions
 {
-    /// <summary>
+    /// <remarks>
     /// Configura mensajes de error personalizados para las validaciones de model binding en ASP.NET Core.
-    /// </summary>
+    /// </remarks>
     /// <param name="options">Las opciones de configuración de MVC.</param>
     public static void ConfigureModelBindingMessages(this MvcOptions options)
     {

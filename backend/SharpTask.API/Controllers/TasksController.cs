@@ -12,10 +12,10 @@ public class TasksController : BaseApiController
     private readonly ITaskQueryService _queryService;
     private readonly ITaskCommandService _commandService;
 
-    /// <summary>
+    /// <remarks>
     /// Constructor del controlador de tareas, recibe las dependencias de los
     /// servicios de consulta y escritura de tareas a través de inyección de dependencias.
-    /// </summary>
+    /// </remarks>
     /// <param name="queryService">Servicio de consulta de tareas</param>
     /// <param name="commandService">Servicio de escritura de tareas</param>
     public TasksController(ITaskQueryService queryService, ITaskCommandService commandService)
@@ -24,13 +24,13 @@ public class TasksController : BaseApiController
         _commandService = commandService;
     }
 
-    /// <summary>
+    /// <remarks>
     /// Acción para obtener todas las tareas, responde a una solicitud GET a la ruta "api/v1/tasks",
     /// esta acción también permite filtrar las tareas por su estado, mediante un parámetro de
     /// consulta opcional llamado "status", que representa el estado de las tareas a obtener, y debe ser un valor
     /// del enum TaskState, si no se proporciona el parámetro de consulta "status",
     /// esta acción devuelve todas las tareas sin filtrar por estado.
-    /// </summary>
+    /// </remarks>
     /// <param name="status">El estado de las tareas a obtener (opcional)</param>
     /// <returns>Una respuesta HTTP con el listado de tareas</returns>
     [HttpGet]
@@ -42,10 +42,10 @@ public class TasksController : BaseApiController
         return Success(tasks);
     }
 
-    /// <summary>
+    /// <remarks>
     /// Acción para obtener una tarea por su ID, responde a una solicitud GET a la ruta "api/v1/tasks/{id}",
     /// donde {id} es un parámetro de ruta que representa el ID de la tarea a obtener, y debe ser un GUID.
-    /// </summary>
+    /// </remarks>
     /// <param name="id">El ID de la tarea a obtener</param>
     /// <returns>Una respuesta HTTP con la tarea obtenida o un error 404 si no se encuentra</returns>
     [HttpGet("{id:guid}")]
@@ -55,11 +55,11 @@ public class TasksController : BaseApiController
         return SuccessOrNotFound(task);
     }
 
-    /// <summary>
+    /// <remarks>
     /// Acción para crear una nueva tarea, responde a una solicitud POST a la ruta "api/v1/tasks",
     /// y recibe un objeto JSON en el cuerpo de la solicitud que representa los datos
     /// de la tarea a crear, con el formato definido por CreateTaskRequestDto.
-    /// </summary>
+    /// </remarks>
     /// <param name="request">Los datos de la tarea a crear</param>
     /// <returns>Una respuesta HTTP con la tarea creada</returns>
     [HttpPost]
@@ -69,10 +69,10 @@ public class TasksController : BaseApiController
         return CreatedSuccess(nameof(GetById), new { id = task.Id }, task);
     }
 
-    /// <summary>
+    /// <remarks>
     /// Acción para actualizar una tarea existente, responde a una solicitud PUT a la ruta "api/v1/tasks/{id}",
     /// donde {id} es un parámetro de ruta que representa el ID de la tarea a actualizar, y debe ser un GUID.
-    /// </summary>
+    /// </remarks>
     /// <param name="id">El ID de la tarea a actualizar</param>
     /// <param name="request">Los datos actualizados de la tarea</param>
     /// <returns>Una respuesta HTTP con la tarea actualizada o un error 404 si no se encuentra</returns>
@@ -87,13 +87,13 @@ public class TasksController : BaseApiController
         );
     }
 
-    /// <summary>
+    /// <remarks>
     /// Acción para actualizar el estado de una tarea existente,
     /// responde a una solicitud PATCH a la ruta "api/v1/tasks/{id}/status",
     /// donde {id} es un parámetro de ruta que representa el ID de la tarea a actualizar,
     /// y debe ser un GUID, y recibe un objeto JSON en el cuerpo de la solicitud que representa
     /// el nuevo estado de la tarea, con el formato definido por UpdateTaskStatusRequestDto.
-    /// </summary>
+    /// </remarks>
     /// <param name="id">El ID de la tarea a actualizar</param>
     /// <param name="request">Los datos del nuevo estado de la tarea</param>
     /// <returns>Una respuesta HTTP con la tarea actualizada o un error 404 si no se encuentra</returns>
@@ -111,14 +111,14 @@ public class TasksController : BaseApiController
         );
     }
 
-    /// <summary>
+    /// <remarks>
     /// Acción para marcar una tarea como completada,
     /// responde a una solicitud PATCH a la ruta "api/v1/tasks/{id}/complete",
     /// donde {id} es un parámetro de ruta que representa el ID de la tarea
     /// a actualizar, y debe ser un GUID, esta acción no recibe un cuerpo
     /// en la solicitud, ya que el nuevo estado de la tarea siempre será TaskState.Completed,
     /// definido en el método como un valor fijo, por lo que no es necesario recibirlo en la solicitud.
-    /// </summary>
+    /// </remarks>
     /// <param name="id">El ID de la tarea a actualizar</param>
     /// <returns>Una respuesta HTTP con la tarea actualizada o un error 404 si no se encuentra</returns>
     [HttpPatch("{id:guid}/complete")]
@@ -135,11 +135,11 @@ public class TasksController : BaseApiController
         );
     }
 
-    /// <summary>
+    /// <remarks>
     /// Acción para eliminar una tarea existente, responde a una solicitud DELETE a la ruta "api/v1/tasks/{id}",
     /// donde {id} es un parámetro de ruta que representa el ID de la tarea
     /// a eliminar, y debe ser un GUID, esta acción no recibe un cuerpo en la solicitud.
-    /// </summary>
+    /// </remarks>
     /// <param name="id">El ID de la tarea a eliminar</param>
     /// <returns>Una respuesta HTTP con el resultado de la operación de eliminación o un error 404 si no se encuentra</returns>
     [HttpDelete("{id:guid}")]
@@ -153,12 +153,12 @@ public class TasksController : BaseApiController
         );
     }
 
-    /// <summary>
+    /// <remarks>
     /// Acción para buscar tareas por una palabra clave, responde a una solicitud GET a la ruta "api/v1/tasks/search",
     /// y recibe un parámetro de consulta llamado "keyword" que representa la palabra clave para
     /// buscar en el título o descripción de las tareas, esta acción devuelve una lista de tareas que coinciden
     /// con la palabra clave, o una lista vacía si no se encuentran coincidencias.
-    /// </summary>
+    /// </remarks>
     /// <param name="keyword">La palabra clave para buscar en el título o descripción de las tareas</param>
     /// <returns>Una lista de tareas que coinciden con la palabra clave o una lista vacía si no se encuentran coincidencias</returns>
     [HttpGet("search")]

@@ -17,10 +17,10 @@ public class NotesController : BaseApiController
     private readonly INoteQueryService _queryService;
     private readonly INoteCommandService _commandService;
 
-    /// <summary>
+    /// <remarks>
     /// Constructor del controlador de notas, recibe las dependencias de los
     /// servicios de consulta y escritura de notas a través de inyección de dependencias.
-    /// </summary>
+    /// </remarks>
     /// <param name="queryService">Servicio de consulta de notas</param>
     /// <param name="commandService">Servicio de escritura de notas</param>
     public NotesController(INoteQueryService queryService, INoteCommandService commandService)
@@ -29,14 +29,14 @@ public class NotesController : BaseApiController
         _commandService = commandService;
     }
 
-    /// <summary>
+    /// <remarks>
     /// Acción para obtener todas las notas asociadas a una tarea específica,
     /// responde a una solicitud GET a la ruta "api/v1/tasks/{taskId}/notes",
     /// donde {taskId} es un parámetro de ruta que representa el ID de la
     /// tarea a la que pertenecen las notas a obtener, y debe ser un GUID,
     /// esta acción devuelve una lista de notas asociadas a la tarea especificada
     /// por el ID en la ruta.
-    /// </summary>
+    /// </remarks>
     /// <param name="taskId">ID de la tarea a la que pertenecen las notas</param>
     /// <returns>Una lista de notas asociadas a la tarea especificada</returns>
     [HttpGet]
@@ -46,7 +46,7 @@ public class NotesController : BaseApiController
         return Success(notes);
     }
 
-    /// <summary>
+    /// <remarks>
     /// Acción para obtener una nota por su ID, responde a una solicitud GET
     /// a la ruta "api/v1/tasks/{taskId}/notes/{id}", donde {taskId} es un
     /// parámetro de ruta que representa el ID de la tarea a la que pertenece la nota,
@@ -54,7 +54,7 @@ public class NotesController : BaseApiController
     /// ambos deben ser GUIDs, esta acción devuelve la nota especificada por el ID en la ruta,
     /// siempre y cuando esa nota pertenezca a la tarea especificada por el taskId en la ruta,
     /// de lo contrario devuelve un error 404 indicando que la nota no se encontró.
-    /// </summary>
+    /// </remarks>
     /// <param name="taskId">ID de la tarea a la que pertenece la nota</param>
     /// <param name="id">ID de la nota a obtener</param>
     /// <returns>La nota especificada por el ID en la ruta</returns>
@@ -65,7 +65,7 @@ public class NotesController : BaseApiController
         return SuccessOrNotFound(note, ErrorCodes.NoteNotFound, "La nota solicitada no existe.");
     }
 
-    /// <summary>
+    /// <remarks>
     /// Acción para crear una nueva nota asociada a una tarea específica,
     /// responde a una solicitud POST a la ruta "api/v1/tasks/{taskId}/notes",
     /// donde {taskId} es un parámetro de ruta que representa el ID de la tarea a la que se asociará la nota,
@@ -73,7 +73,7 @@ public class NotesController : BaseApiController
     /// los datos de la nota a crear, con el formato definido por CreateNoteRequestDto y crea una nueva
     /// nota asociada a la tarea especificada por el taskId en la ruta, si la tarea especificada
     /// por el taskId no existe, devuelve un error 404 indicando que la tarea no se encontró.
-    /// </summary>
+    /// </remarks>
     /// <param name="taskId">ID de la tarea a la que se asociará la nota</param>
     /// <param name="request">Datos de la nota a crear</param>
     /// <returns>La nota creada</returns>
@@ -84,7 +84,7 @@ public class NotesController : BaseApiController
         return CreatedSuccess(nameof(GetById), new { taskId, id = note.Id }, note);
     }
 
-    /// <summary>
+    /// <remarks>
     /// Acción para actualizar una nota existente,
     /// responde a una solicitud PUT a la ruta "api/v1/tasks/{taskId}/notes/{id}",
     /// donde {taskId} es un parámetro de ruta que representa el ID de la tarea a
@@ -95,7 +95,7 @@ public class NotesController : BaseApiController
     /// en la ruta, siempre y cuando esa nota pertenezca a la tarea especificada por el taskId en la ruta,
     /// de lo contrario devuelve un error 404 indicando que la nota no se encontró, esta acción también
     /// devuelve un error 404 si la tarea especificada por el taskId en la ruta no existe, indicando que la tarea no se encontró.
-    /// </summary>
+    /// </remarks>
     /// <param name="taskId">ID de la tarea a la que pertenece la nota</param>
     /// <param name="id">ID de la nota a actualizar</param>
     /// <param name="request">Datos actualizados de la nota</param>
@@ -115,7 +115,7 @@ public class NotesController : BaseApiController
         );
     }
 
-    /// <summary>
+    /// <remarks>
     /// Acción para eliminar una nota existente,
     /// responde a una solicitud DELETE a la ruta "api/v1/tasks/{taskId}/notes/{id}",
     /// donde {taskId} es un parámetro de ruta que representa el ID de la tarea a la que
@@ -125,7 +125,7 @@ public class NotesController : BaseApiController
     /// en la ruta, de lo contrario devuelve un error 404 indicando que la nota no se encontró,
     /// esta acción también devuelve un error 404 si la tarea especificada por el taskId en la ruta no existe,
     /// indicando que la tarea no se encontró.
-    /// </summary>
+    /// </remarks>
     /// <param name="taskId">ID de la tarea a la que pertenece la nota</param>
     /// <param name="id">ID de la nota a eliminar</param>
     /// <returns>Una respuesta HTTP indicando el resultado de la operación</returns>
