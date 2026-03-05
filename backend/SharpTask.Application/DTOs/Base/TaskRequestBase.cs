@@ -6,5 +6,5 @@ public abstract record TaskRequestBase
 {
     public required string Title { get; init; }
     public string? Description { get; init; }
-    public TaskState Status { get; init; }
+    public TaskState? Status { get; init; }
 }

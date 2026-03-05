@@ -22,6 +22,9 @@ public class TaskRequestBaseValidator<T> : AbstractValidator<T>
             .MaximumLength(1024)
             .WithMessage("La descripción no puede exceder los 1024 caracteres.");
 
-        RuleFor(x => x.Status).IsInEnum().WithMessage("El estado de la tarea no es válido.");
+        RuleFor(x => x.Status)
+            .IsInEnum()
+            .WithMessage("El estado de la tarea no es válido.")
+            .When(x => x.Status.HasValue);
     }
 }

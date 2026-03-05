@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using System.Text.Json.Serialization;
 using SharpTask.Domain.Entities.Base;
 using SharpTask.Domain.Enums;
@@ -13,4 +14,17 @@ public class TaskItem : BaseEntity
 
     [JsonIgnore]
     public List<NoteItem> Notes { get; set; } = new();
+
+    public TaskItem() { }
+
+    [SetsRequiredMembers]
+    public TaskItem(string title, string? description, TaskState? status, DateTime now)
+    {
+        Id = Guid.NewGuid();
+        Title = title;
+        Description = description;
+        Status = status ?? TaskState.Pending;
+        CreatedAt = now;
+        UpdatedAt = now;
+    }
 }
