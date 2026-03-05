@@ -22,5 +22,8 @@ public class TaskItem : BaseEntity
         Status = status ?? TaskState.Pending;
         CreatedAt = now;
         UpdatedAt = now;
+
+        // Agregamos un cambio inicial para reflejar la creación de la tarea
+        Changes.Add(new TaskChange(Status, now));
     }
 }
