@@ -67,6 +67,10 @@ public class TaskCommandService : ITaskCommandService
         if (existingTask == null)
             return null;
 
+        // Guardamos el estado anterior de la tarea para registrar
+        // el cambio de estado en el historial de cambios si es necesario
+        var oldStatus = existingTask.Status;
+
         // Mapeamos los datos del DTO de solicitud a la tarea existente
         // para actualizar sus propiedades con los nuevos valores proporcionados
         request.Adapt(existingTask);
@@ -74,11 +78,17 @@ public class TaskCommandService : ITaskCommandService
         // Actualizamos la fecha de actualización de la tarea a la hora actual para reflejar el cambio
         existingTask.UpdatedAt = _dateTimeProvider.UtcNow;
 
+        // Si el estado de la tarea ha cambiado, agregamos un nuevo registro al historial de cambios de la tarea
+        if (oldStatus != existingTask.Status)
+        {
+            existingTask.Changes.Add(new TaskChange(existingTask.Status, existingTask.UpdatedAt));
+        }
+
         // Guardamos los cambios en el repositorio actualizando la tarea existente
-        await _taskRepo.UpdateAsync(existingTask);
+        var updatedTask = await _taskRepo.UpdateAsync(existingTask);
 
         // Mapeamos la tarea actualizada a un DTO de respuesta para ser consumido por el frontend y lo devolvemos
-        return existingTask.Adapt<TaskResponseDto>();
+        return updatedTask?.Adapt<TaskResponseDto>();
     }
 
     /// <summary>
@@ -101,17 +111,30 @@ public class TaskCommandService : ITaskCommandService
         if (existingTask == null)
             return null;
 
+        // Si el estado de la tarea es el mismo que el nuevo estado proporcionado
+        // en el DTO de solicitud, no realizamos ninguna actualización
+        if (existingTask.Status == request.Status)
+        {
+            return existingTask.Adapt<TaskResponseDto>();
+        }
+
+        // Obtenemos la hora actual para establecer la fecha de actualización de la tarea
+        var currentTime = _dateTimeProvider.UtcNow;
+
         // Actualizamos el estado de la tarea con el nuevo valor proporcionado en el DTO de solicitud
         existingTask.Status = request.Status;
 
         // Actualizamos la fecha de actualización de la tarea a la hora actual para reflejar el cambio
-        existingTask.UpdatedAt = _dateTimeProvider.UtcNow;
+        existingTask.UpdatedAt = currentTime;
+
+        // Agregamos un nuevo registro al historial de cambios de la tarea para registrar el cambio de estado
+        existingTask.Changes.Add(new TaskChange(existingTask.Status, existingTask.UpdatedAt));
 
         // Guardamos los cambios en el repositorio actualizando la tarea existente
-        await _taskRepo.UpdateAsync(existingTask);
+        var updatedTask = await _taskRepo.UpdateAsync(existingTask);
 
         // Mapeamos la tarea actualizada a un DTO de respuesta para ser consumido por el frontend y lo devolvemos
-        return existingTask.Adapt<TaskResponseDto>();
+        return updatedTask?.Adapt<TaskResponseDto>();
     }
 
     /// <summary>
