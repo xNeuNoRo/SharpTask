@@ -7,6 +7,11 @@ using SharpTask.Domain.Exceptions;
 
 namespace SharpTask.API.Controllers;
 
+/// <summary>
+/// Controlador de API para gestionar operaciones CRUD de tareas.
+/// Proporciona endpoints para crear, leer, actualizar y eliminar tareas,
+/// así como para filtrar, buscar y cambiar el estado de las tareas.
+/// </summary>
 public class TasksController : BaseApiController
 {
     private readonly ITaskQueryService _queryService;

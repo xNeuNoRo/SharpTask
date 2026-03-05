@@ -2,6 +2,13 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace SharpTask.API.Extensions;
 
+/// <summary>
+/// Extensiones para configurar mensajes de error personalizados
+/// en las validaciones de model binding de ASP.NET Core.
+/// Permite personalizar los mensajes de error que se devuelven cuando
+/// ocurre un error durante el proceso de vinculación de modelos,
+/// haciendo que los mensajes sean más claros y específicos para los consumidores.
+/// </summary>
 public static class MvcOptionsExtensions
 {
     /// <remarks>
@@ -45,12 +52,16 @@ public static class MvcOptionsExtensions
             "El cuerpo de la petición no puede estar vacío."
         );
         // Error cuando falta un valor para un campo específico que es requerido
-        provider.SetMissingBindRequiredValueAccessor((f) => $"Falta proporcionar un valor para el campo requerido '{f}'.");
+        provider.SetMissingBindRequiredValueAccessor(
+            (f) => $"Falta proporcionar un valor para el campo requerido '{f}'."
+        );
         // Error cuando se esperaba un valor pero no se proporcionó ninguno
         provider.SetMissingKeyOrValueAccessor(() => "Se requiere proporcionar un valor.");
 
         // Error cuando se esperaba un número pero se proporcionó un valor que no es un número
-        provider.SetNonPropertyValueMustBeANumberAccessor(() => "El valor debe ser un número válido.");
+        provider.SetNonPropertyValueMustBeANumberAccessor(() =>
+            "El valor debe ser un número válido."
+        );
         // Error cuando se esperaba un número para un campo específico pero se proporcionó un valor que no es un número
         provider.SetValueMustBeANumberAccessor((f) => $"El campo '{f}' debe ser un número válido.");
     }

@@ -5,19 +5,41 @@ using SharpTask.Domain.Exceptions;
 
 namespace SharpTask.API.Middlewares;
 
+/// <summary>
+/// Middleware para manejar excepciones de forma global en la aplicación,
+/// capturando cualquier excepción no controlada que ocurra durante el
+/// procesamiento de una solicitud HTTP, y devolviendo una respuesta HTTP adecuada
+/// con un formato de error consistente utilizando ApiResponse, además de loggear la excepción
+/// para facilitar el diagnóstico y la solución de problemas en el servidor.
+/// </summary>
 public class ExceptionMiddleware
 {
     private readonly RequestDelegate _next;
     private readonly ILogger<ExceptionMiddleware> _logger;
 
-    // Constructor del middleware, recibe el siguiente delegado en la cadena de middlewares y un logger para registrar errores
+    /// <summary>
+    /// Constructor del middleware de excepciones, recibe las dependencias necesarias
+    /// a través de inyección de dependencias, que son el RequestDelegate para poder
+    /// llamar al siguiente middleware en la tubería de procesamiento de solicitudes,
+    /// y un ILogger para loggear las excepciones que ocurran.
+    /// </summary>
+    /// <param name="next">El siguiente middleware en la tubería de procesamiento de solicitudes.</param>
+    /// <param name="logger">El logger para registrar las excepciones.</param>
     public ExceptionMiddleware(RequestDelegate next, ILogger<ExceptionMiddleware> logger)
     {
         _next = next;
         _logger = logger;
     }
 
-    // Este método se ejecuta para cada solicitud HTTP que pasa por el middleware
+    /// <summary>
+    /// Método principal del middleware, se ejecuta para cada solicitud HTTP entrante,
+    /// intenta procesar la solicitud normalmente, pero si ocurre cualquier excepción no controlada,
+    /// la captura y maneja la excepción para devolver una respuesta HTTP adecuada al cliente,
+    /// utilizando el formato de ApiResponse para mantener la consistencia en las respuestas de error,
+    /// además de loggear la excepción para facilitar el diagnóstico y la solución de problemas en el servidor.
+    /// </summary>
+    /// <param name="context">El contexto de la solicitud HTTP.</param>
+    /// <returns>Una tarea asincrónica que representa el procesamiento de la solicitud.</returns>
     public async Task InvokeAsync(HttpContext context)
     {
         // Intentamos procesar la solicitud normalmente
@@ -32,7 +54,15 @@ public class ExceptionMiddleware
         }
     }
 
-    // Este método maneja la excepción y construye una respuesta HTTP adecuada
+    /// <summary>
+    /// Método para manejar la excepción capturada, determina el tipo de excepción y construye una respuesta HTTP adecuada,
+    /// utilizando el formato de ApiResponse para mantener la consistencia en las respuestas de error,
+    /// además de loggear la excepción para facilitar el diagnóstico y la solución de problemas en el servidor.
+    /// </summary>
+    /// <param name="context">El contexto de la solicitud HTTP.</param>
+    /// <param name="exception">La excepción capturada.</param>
+    /// <param name="logger">El logger para registrar la excepción.</param>
+    /// <returns>Una tarea asincrónica que representa el procesamiento de la respuesta.</returns>
     private static Task HandleExceptionAsync(
         HttpContext context,
         Exception exception,

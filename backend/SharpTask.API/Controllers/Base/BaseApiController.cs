@@ -4,8 +4,13 @@ using SharpTask.Domain.Exceptions;
 
 namespace SharpTask.API.Controllers.Base;
 
-// Esto es para tener una ruta comun para todos los controladores de la API
-// De esa forma evito repetir el "api/v1" en cada controlador
+/// <summary>
+/// Controlador base para la API, proporciona métodos de conveniencia para
+/// devolver respuestas con el formato de ApiResponse, y también define la
+/// ruta base para todos los controladores que hereden de esta clase, que será
+/// "api/v1/nombre-del-controlador", donde "nombre-del-controlador" es el nombre
+/// de la clase del controlador sin el sufijo "Controller".
+/// </summary>
 [ApiController] // Esto es para que el framework sepa que esta clase es un controlador de API, y no un controlador de MVC
 [Route("api/v1/[controller]")] // Esto es para que la ruta de cada controlador sea "api/v1/nombre-del-controlador", donde "nombre-del-controlador" es el nombre de la clase del controlador sin el sufijo "Controller"
 public abstract class BaseApiController : ControllerBase

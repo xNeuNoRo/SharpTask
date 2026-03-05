@@ -11,6 +11,12 @@ namespace SharpTask.API.Controllers;
 // que son las notas asociadas a una tarea específica,
 // por lo que la ruta debe reflejar esa relación jerárquica entre tareas y notas.
 // Manteniendo los principios de una RESTful API
+
+/// <summary>
+/// Controlador de API para gestionar operaciones CRUD de notas asociadas a tareas específicas.
+/// Proporciona endpoints para crear, leer, actualizar y eliminar notas,
+/// siempre y cuando esas notas estén asociadas a una tarea específica identificada por su ID en la ruta.
+/// </summary>
 [Route("api/v1/tasks/{taskId:guid}/[controller]")]
 public class NotesController : BaseApiController
 {
