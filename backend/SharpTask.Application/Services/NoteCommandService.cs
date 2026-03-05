@@ -47,7 +47,10 @@ public class NoteCommandService : INoteCommandService
         // con un mensaje de error indicando que la tarea no existe
         if (!exists)
         {
-            throw AppException.NotFound("La tarea a la que se intenta asociar la nota no existe.");
+            throw AppException.NotFound(
+                "La tarea a la que se intenta asociar la nota no existe.",
+                ErrorCodes.TaskNotFound
+            );
         }
 
         // Obtenemos la hora actual para establecer la fecha de creación de la nota
