@@ -15,7 +15,8 @@ public static class DependencyInjection
     /// <returns>El contenedor de servicios actualizado.</returns>
     public static IServiceCollection AddApplicationServices(this IServiceCollection services)
     {
-        // Escanear el ensamblado actual en busca de clases que implementen AbstractValidator<T> y registrarlas automáticamente (esto es parte de FluentValidation)
+        // Escanear el ensamblado actual en busca de clases que implementen AbstractValidator<T> 
+        // y registrarlas automáticamente (esto es parte de FluentValidation)
         services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
 
         // Registrar los servicios de query de tareas y notas
