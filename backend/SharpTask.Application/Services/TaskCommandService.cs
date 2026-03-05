@@ -10,6 +10,7 @@ namespace SharpTask.Application.Services;
 public class TaskCommandService : ITaskCommandService
 {
     private readonly ITaskRepository _taskRepo;
+    private readonly INoteRepository _noteRepo;
     private readonly IDateTimeProvider _dateTimeProvider;
 
     /// <summary>
@@ -20,9 +21,14 @@ public class TaskCommandService : ITaskCommandService
     /// </summary>
     /// <param name="taskRepo">La instancia del repositorio de tareas.</param>
     /// <param name="dateTimeProvider">La instancia del proveedor de fecha y hora.</param>
-    public TaskCommandService(ITaskRepository taskRepo, IDateTimeProvider dateTimeProvider)
+    public TaskCommandService(
+        ITaskRepository taskRepo,
+        INoteRepository noteRepo,
+        IDateTimeProvider dateTimeProvider
+    )
     {
         _taskRepo = taskRepo;
+        _noteRepo = noteRepo;
         _dateTimeProvider = dateTimeProvider;
     }
 
@@ -109,12 +115,26 @@ public class TaskCommandService : ITaskCommandService
     }
 
     /// <summary>
-    /// Elimina una tarea existente en la base de datos por su ID. Verifica si la tarea existe antes de intentar eliminarla y devuelve false si no se puede eliminar.
+    /// Elimina una tarea existente y sus notas asociadas en la base de datos por su ID. Verifica si la tarea existe antes de intentar eliminarla y devuelve false si no se puede eliminar.
     /// </summary>
     /// <param name="id">El ID de la tarea a eliminar.</param>
     /// <returns>True si la tarea fue eliminada, false en caso contrario.</returns>
     public async Task<bool> DeleteTaskAsync(Guid id)
     {
+        // Verificamos si la tarea existe en el repositorio antes de intentar eliminarla
+        // para evitar desperdiciar I/O en una operación de eliminación que posiblemente fallaria
+        var exists = await _taskRepo.ExistsAsync(id);
+
+        // Si la tarea no existe, devolvemos false para indicar que no se pudo eliminar
+        if (!exists)
+        {
+            return false;
+        }
+
+        // Borramos las notas asociadas a la tarea antes de eliminarla para mantener la integridad referencial
+        await _noteRepo.DeleteNotesByTaskIdAsync(id);
+
+        // Eliminamos la tarea por su ID utilizando el repositorio y devolvemos el resultado de la operación
         return await _taskRepo.DeleteAsync(id);
     }
 }
