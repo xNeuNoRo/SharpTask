@@ -34,12 +34,6 @@ public record TaskResponseDto
     /// <summary>
     /// Lista de cambios de estado de la tarea
     /// </summary>
-    /// <example>[
-    ///   {
-    ///     "status": "Completed",
-    ///     "changedAt": "2026-06-01T12:00:00Z"
-    ///   }
-    /// ]</example>
     public List<TaskChangeDto> Changes { get; init; } = new();
 
     /// <summary>
