@@ -92,6 +92,7 @@ public class NotesController : BaseApiController
     /// <returns>La nota creada</returns>
     [HttpPost]
     [ProducesResponseType(typeof(ApiResponse<NoteResponseDto>), StatusCodes.Status201Created)]
+    [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status404NotFound)]
     [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> Create(Guid taskId, [FromBody] CreateNoteRequestDto request)
     {
@@ -149,12 +150,11 @@ public class NotesController : BaseApiController
     /// <returns>Una respuesta HTTP indicando el resultado de la operación</returns>
     [HttpDelete("{id:guid}")]
     [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Delete(Guid taskId, Guid id)
     {
         var deleted = await _commandService.DeleteNoteAsync(id);
-        return SuccessOrFailure(
+        return SuccessOrNotFound(
             deleted,
             ErrorCodes.NoteNotFound,
             "No se pudo eliminar porque la nota no existe."

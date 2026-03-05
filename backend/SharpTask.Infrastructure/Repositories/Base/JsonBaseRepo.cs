@@ -33,7 +33,7 @@ public abstract class JsonBaseRepo<T>
     protected readonly JsonSerializerOptions _options;
 
     /// <summary>
-    /// Refencia al semaforo específico para este archivo JSON, obtenido del JsonFileLockManager,
+    /// Referencia al semaforo específico para este archivo JSON, obtenido del JsonFileLockManager,
     /// que se utiliza para sincronizar el acceso a este archivo y evitar problemas de concurrencia
     /// al leer o escribir en el archivo desde diferentes repositorios o hilos.
     /// </summary>

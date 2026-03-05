@@ -170,7 +170,7 @@ public class TasksController : BaseApiController
     public async Task<IActionResult> Delete(Guid id)
     {
         var deleted = await _commandService.DeleteTaskAsync(id);
-        return SuccessOrFailure(
+        return SuccessOrNotFound(
             deleted, // El resultado de la operación de eliminación
             ErrorCodes.TaskNotFound, // El código de error específico para tarea no encontrada
             "No se pudo eliminar porque la tarea no existe." // El mensaje de error específico para tarea no encontrada
