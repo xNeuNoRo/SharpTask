@@ -1,14 +1,32 @@
 namespace SharpTask.Domain.Common;
 
+/// <summary>
+/// Clase genérica para representar la respuesta de la API,
+/// con un formato consistente que incluye un indicador de éxito (Ok),
+/// los datos de la respuesta (Data) y la información del error en
+/// caso de que ocurra un error (Error), lo que facilita el manejo de respuestas
+/// tanto exitosas como de error en el cliente,
+/// proporcionando una estructura clara y uniforme para todas las respuestas de la API.
+/// </summary>
+/// <typeparam name="T"></typeparam>
 public class ApiResponse<T>
 {
-    // Ok indica si la respuesta fue exitosa o no
+    /// <summary>
+    /// Indica si la respuesta fue exitosa o no.
+    /// </summary>
+    /// <example>true</example>
     public bool Ok { get; private set; }
 
-    // Data contiene la informacion de la respuesta en caso de exito, o null si hubo un error
+    /// <summary>
+    /// Contiene los datos de la respuesta
+    /// </summary>
+    /// <example>{ "id": "123", "title": "Tarea de ejemplo" }</example>
     public T? Data { get; private set; }
 
-    // Error contiene la informacion del error en caso de que Ok sea false, o null si la respuesta fue exitosa
+    /// <summary>
+    /// Contiene la información del error ocurrido
+    /// </summary>
+    /// <example>null</example>
     public ApiError? Error { get; private set; }
 
     /// <remarks>

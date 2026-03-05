@@ -1,9 +1,28 @@
 namespace SharpTask.Domain.Common;
 
+/// <summary>
+/// Clase que representa un error en la API, con un código de error,
+/// un mensaje descriptivo y opcionalmente detalles adicionales sobre el error,
+/// que pueden ser utilizados para proporcionar información más específica sobre el error ocurrido.
+/// </summary>
 public class ApiError
 {
+    /// <summary>
+    /// Código de error
+    /// </summary>
+    /// <example>TASK_NOT_FOUND</example>
     public string Code { get; init; }
+
+    /// <summary>
+    /// Mensaje descriptivo del error
+    /// </summary>
+    /// <example>No se encontró la tarea con el ID especificado.</example>
     public string Message { get; init; }
+
+    /// <summary>
+    /// Detalles adicionales del error
+    /// </summary>
+    /// <example>{ "TaskId": "El ID de la tarea proporcionado no es válido." }</example>
     public object? Details { get; init; }
 
     /// <remarks>
