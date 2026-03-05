@@ -3,6 +3,7 @@ using SharpTask.Application.DTOs.Note;
 using SharpTask.Application.Interfaces.Repositories;
 using SharpTask.Application.Interfaces.Services;
 using SharpTask.Domain.Entities;
+using SharpTask.Domain.Exceptions;
 using SharpTask.Domain.Interfaces;
 
 namespace SharpTask.Application.Services;
@@ -11,6 +12,7 @@ public class NoteCommandService : INoteCommandService
 {
     private readonly IDateTimeProvider _dateTimeProvider;
     private readonly INoteRepository _noteRepo;
+    private readonly ITaskRepository _taskRepo;
 
     /// <summary>
     /// Constructor del servicio de comandos de notas que recibe una instancia del repositorio de notas
@@ -18,9 +20,14 @@ public class NoteCommandService : INoteCommandService
     /// </summary>
     /// <param name="noteRepo">La instancia del repositorio de notas.</param>
     /// <param name="dateTimeProvider">La instancia del proveedor de fechas y horas.</param>
-    public NoteCommandService(INoteRepository noteRepo, IDateTimeProvider dateTimeProvider)
+    public NoteCommandService(
+        INoteRepository noteRepo,
+        ITaskRepository taskRepo,
+        IDateTimeProvider dateTimeProvider
+    )
     {
         _noteRepo = noteRepo;
+        _taskRepo = taskRepo;
         _dateTimeProvider = dateTimeProvider;
     }
 
@@ -33,12 +40,25 @@ public class NoteCommandService : INoteCommandService
     /// <returns>El DTO de respuesta con los datos de la nota creada.</returns>
     public async Task<NoteResponseDto> CreateNoteAsync(Guid taskId, CreateNoteRequestDto request)
     {
+        // Verificamos si la tarea a la que se intenta asociar la nota existe antes de crear la nota
+        var exists = await _taskRepo.ExistsAsync(taskId);
+
+        // Si la tarea no existe, lanzamos una excepción de tipo AppException
+        // con un mensaje de error indicando que la tarea no existe
+        if (!exists)
+        {
+            throw AppException.NotFound("La tarea a la que se intenta asociar la nota no existe.");
+        }
+
         // Obtenemos la hora actual para establecer la fecha de creación de la nota
         var currentTime = _dateTimeProvider.UtcNow;
+
         // Creamos una nueva instancia de NoteItem utilizando los datos del DTO de solicitud y la hora actual
         var newNote = new NoteItem(taskId, request.Content, currentTime);
+
         // Agregamos la nueva nota al repositorio y obtenemos la nota creada con su ID generado
         var createdNote = await _noteRepo.AddAsync(newNote);
+
         // Mapeamos la nota creada a un DTO de respuesta para ser consumido por el frontend y lo devolvemos
         return createdNote.Adapt<NoteResponseDto>();
     }
