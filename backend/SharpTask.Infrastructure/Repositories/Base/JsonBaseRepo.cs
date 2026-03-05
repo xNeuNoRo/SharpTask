@@ -39,15 +39,12 @@ public abstract class JsonBaseRepo<T>
         // 1 semaforo por archivo para evitar problemas de concurrencia al
         // acceder a los archivos JSON desde diferentes repositorios o hilos
         _fileLock = JsonFileLockManager.GetOrCreateLock(filePath);
-
-        // Asegura que el archivo exista
-        EnsureFile();
     }
 
     /// <summary>
     /// Metodo para asegurar que el archivo JSON exista antes de intentar leerlo o escribirlo.
     /// </summary>
-    private void EnsureFile()
+    private async Task EnsureFileAsync()
     {
         // Obtiene el directorio del archivo
         var directory = Path.GetDirectoryName(_filePath);
@@ -60,7 +57,7 @@ public abstract class JsonBaseRepo<T>
 
         // Si el archivo no existe o esta vacio, lo crea con un array vacío
         if (!File.Exists(_filePath) || new FileInfo(_filePath).Length == 0)
-            File.WriteAllText(_filePath, "[]");
+            await File.WriteAllTextAsync(_filePath, "[]");
     }
 
     // =================================
@@ -80,7 +77,8 @@ public abstract class JsonBaseRepo<T>
             return _cache.ToList(); // Retorna una copia de la cache para evitar modificaciones externas a la cache original
 
         // Asegura que el archivo exista antes de intentar cargarlo
-        EnsureFile();
+        await EnsureFileAsync();
+
         // Lee el contenido del archivo JSON
         string json = await File.ReadAllTextAsync(_filePath);
 
@@ -124,6 +122,8 @@ public abstract class JsonBaseRepo<T>
     /// <returns>Una tarea que representa la operación de guardado.</returns>
     private async Task SaveInternalAsync(List<T> items)
     {
+        // Asegura que el archivo exista antes de intentar guardarlo
+        await EnsureFileAsync();
         // Serializamos la lista completa a formato JSON
         string json = JsonSerializer.Serialize(items, _options);
         // Escribimos el JSON en el archivo (sobrescribiendo lo que haya)
