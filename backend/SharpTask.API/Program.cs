@@ -69,7 +69,10 @@ builder
 // Registramos el auto mapeo de validaciones de FluentValidation
 // Gracias a SharpGrip.FluentValidation.AutoValidation
 // para que se apliquen automáticamente a los modelos de datos
-builder.Services.AddFluentValidationAutoValidation();
+builder.Services.AddFluentValidationAutoValidation(config =>
+{
+    config.OverrideDefaultResultFactoryWith<CustomValidationResultFactory>();
+});
 
 // Construimos la aplicación a partir de la configuración y servicios registrados
 var app = builder.Build();
