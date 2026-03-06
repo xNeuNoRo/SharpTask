@@ -1,5 +1,6 @@
 using System.Net;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using SharpTask.Domain.Common;
 using SharpTask.Domain.Exceptions;
 
@@ -69,8 +70,8 @@ public class ExceptionMiddleware
         ILogger logger
     )
     {
-        // Verificamos si la respuesta ya ha comenzado a enviarse al cliente, 
-        // en cuyo caso no podemos modificarla para devolver un error adecuado, 
+        // Verificamos si la respuesta ya ha comenzado a enviarse al cliente,
+        // en cuyo caso no podemos modificarla para devolver un error adecuado,
         // por lo que simplemente loggeamos una advertencia y terminamos la tarea sin hacer nada más
         if (context.Response.HasStarted)
         {
@@ -125,6 +126,7 @@ public class ExceptionMiddleware
         var options = new JsonSerializerOptions
         {
             PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+            Converters = { new JsonStringEnumConverter() },
         };
 
         // Serializamos el objeto de respuesta a JSON y lo escribimos en la respuesta HTTP

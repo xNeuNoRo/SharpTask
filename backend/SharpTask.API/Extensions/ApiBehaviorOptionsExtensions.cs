@@ -18,7 +18,7 @@ public static class ApiBehaviorOptionsExtensions
     /// lo que facilita el manejo de errores en el cliente y proporciona información detallada
     /// sobre los errores de validación que ocurrieron.
     /// </remarks>
-    /// <param name="options"></param>
+    /// <param name="options">Las opciones de comportamiento de la API</param>
     public static void ConfigureInvalidModelStateResponse(this ApiBehaviorOptions options)
     {
         // Sobrescribimos la fábrica de respuestas para modelos no válidos,
