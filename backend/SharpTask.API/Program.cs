@@ -49,7 +49,7 @@ builder
     .Services.AddControllers(options =>
     {
         // Configuramos los mensajes de error personalizados para las validaciones de model binding,
-        // utilizando el mEtodo de extensiOn que definimos en MvcOptionsExtensions
+        // utilizando el metodo de extension que definimos en MvcOptionsExtensions
         options.ConfigureModelBindingMessages();
     })
     .AddJsonOptions(options =>

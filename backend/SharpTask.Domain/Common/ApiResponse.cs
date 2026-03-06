@@ -8,7 +8,7 @@ namespace SharpTask.Domain.Common;
 /// tanto exitosas como de error en el cliente,
 /// proporcionando una estructura clara y uniforme para todas las respuestas de la API.
 /// </summary>
-/// <typeparam name="T"></typeparam>
+/// <typeparam name="T">Tipo de datos de la respuesta</typeparam>
 public class ApiResponse<T>
 {
     /// <summary>
