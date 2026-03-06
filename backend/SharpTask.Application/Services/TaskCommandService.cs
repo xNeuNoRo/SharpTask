@@ -8,18 +8,23 @@ using SharpTask.Domain.Interfaces;
 
 namespace SharpTask.Application.Services;
 
+/// <summary>
+/// Servicio de comandos para las tareas, encargado de manejar 
+/// la lógica de negocio relacionada con la creación, actualización 
+/// y eliminación de tareas, así como la gestión de su estado y el historial de cambios.
+/// </summary>
 public class TaskCommandService : ITaskCommandService
 {
     private readonly ITaskRepository _taskRepo;
     private readonly INoteRepository _noteRepo;
     private readonly IDateTimeProvider _dateTimeProvider;
 
-    /// <summary>
+    /// <remarks>
     /// Constructor del servicio de comandos de tareas que recibe una instancia del
     /// repositorio de tareas y un proveedor de fecha y hora para manejar las operaciones
     /// de escritura relacionadas con las tareas, como crear, actualizar o eliminar tareas.
     /// Este servicio se enfoca exclusivamente en las operaciones de escritura.
-    /// </summary>
+    /// </remarks>
     /// <param name="taskRepo">La instancia del repositorio de tareas.</param>
     /// <param name="noteRepo">La instancia del repositorio de notas para manejar las relaciones entre tareas y notas.</param>
     /// <param name="dateTimeProvider">La instancia del proveedor de fecha y hora.</param>
@@ -34,10 +39,10 @@ public class TaskCommandService : ITaskCommandService
         _dateTimeProvider = dateTimeProvider;
     }
 
-    /// <summary>
+    /// <remarks>
     /// Crea una nueva tarea en la base de datos utilizando los datos proporcionados en el DTO de solicitud.
     /// Mapea la tarea creada a un DTO de respuesta para ser consumido por el frontend y lo devuelve.
-    /// </summary>
+    /// </remarks>
     /// <param name="request">El DTO de solicitud con los datos para crear la tarea.</param>
     /// <returns>El DTO de respuesta con los datos de la tarea creada.</returns>
     public async Task<TaskResponseDto> CreateTaskAsync(CreateTaskRequestDto request)
@@ -52,11 +57,11 @@ public class TaskCommandService : ITaskCommandService
         return createdTask.Adapt<TaskResponseDto>();
     }
 
-    /// <summary>
+    /// <remarks>
     /// Actualiza una tarea existente en la base de datos utilizando los datos proporcionados en el DTO de solicitud.
     /// Verifica si la tarea existe antes de intentar actualizarla y devuelve null si no se puede actualizar.
     /// Mapea la tarea actualizada a un DTO de respuesta para ser consumido por el frontend y lo devuelve.
-    /// </summary>
+    /// </remarks>
     /// <param name="id">El ID de la tarea a actualizar.</param>
     /// <param name="request">El DTO de solicitud con los datos para actualizar la tarea.</param>
     /// <returns>El DTO de respuesta con los datos de la tarea actualizada o null si no se pudo actualizar.</returns>
@@ -103,11 +108,11 @@ public class TaskCommandService : ITaskCommandService
         return updatedTask?.Adapt<TaskResponseDto>();
     }
 
-    /// <summary>
+    /// <remarks>
     /// Actualiza el estado de una tarea existente en la base de datos utilizando los datos proporcionados en el DTO de solicitud.
     /// Verifica si la tarea existe antes de intentar actualizar su estado y devuelve null si no se puede actualizar.
     /// Mapea la tarea actualizada a un DTO de respuesta para ser consumido por el frontend y lo devuelve.
-    /// </summary>
+    /// </remarks>
     /// <param name="id">El ID de la tarea a actualizar.</param>
     /// <param name="request">El DTO de solicitud con los datos para actualizar el estado de la tarea.</param>
     /// <returns>El DTO de respuesta con los datos de la tarea actualizada o null si no se pudo actualizar.</returns>
@@ -149,9 +154,9 @@ public class TaskCommandService : ITaskCommandService
         return updatedTask?.Adapt<TaskResponseDto>();
     }
 
-    /// <summary>
+    /// <remarks>
     /// Elimina una tarea existente y sus notas asociadas en la base de datos por su ID. Verifica si la tarea existe antes de intentar eliminarla y devuelve false si no se puede eliminar.
-    /// </summary>
+    /// </remarks>
     /// <param name="id">El ID de la tarea a eliminar.</param>
     /// <returns>True si la tarea fue eliminada, false en caso contrario.</returns>
     public async Task<bool> DeleteTaskAsync(Guid id)

@@ -7,14 +7,20 @@ using SharpTask.Domain.Enums;
 
 namespace SharpTask.Application.Services;
 
+/// <summary>
+/// Servicio de consultas para las tareas, encargado de manejar la lógica de 
+/// negocio relacionada con la obtención de tareas, incluyendo la recuperación 
+/// de todas las tareas, la obtención de una tarea por su ID, la obtención de 
+/// tareas filtradas por estado y la búsqueda de tareas por palabra clave.
+/// </summary>
 public class TaskQueryService : ITaskQueryService
 {
     private readonly ITaskRepository _taskRepo;
     private readonly INoteRepository _noteRepo;
 
-    /// <summary>
+    /// <remarks>
     /// Constructor del servicio de consultas de tareas que recibe una instancia del repositorio de tareas
-    /// </summary>
+    /// </remarks>
     /// <param name="taskRepo">La instancia del repositorio de tareas.</param>
     /// <param name="noteRepo">La instancia del repositorio de notas.</param>
     public TaskQueryService(ITaskRepository taskRepo, INoteRepository noteRepo)
@@ -23,10 +29,10 @@ public class TaskQueryService : ITaskQueryService
         _noteRepo = noteRepo;
     }
 
-    /// <summary>
+    /// <remarks>
     /// Obtiene todas las tareas de la base de datos
     /// y las mapea a DTOs de respuesta para ser consumidos por el frontend.
-    /// </summary>
+    /// </remarks>
     /// <returns>Una lista de DTOs de respuesta de tareas.</returns>
     public async Task<IEnumerable<TaskResponseDto>> GetAllTasksAsync()
     {
@@ -34,10 +40,10 @@ public class TaskQueryService : ITaskQueryService
         return tasks.Adapt<IEnumerable<TaskResponseDto>>();
     }
 
-    /// <summary>
+    /// <remarks>
     /// Obtiene una tarea por su ID, mapeándola a un DTO de detalle de tarea para proporcionar 
     /// información completa de la tarea, incluyendo sus notas relacionadas, para ser consumido por el frontend.
-    /// </summary>
+    /// </remarks>
     /// <param name="id">El ID de la tarea a obtener.</param>
     /// <returns>Un DTO de detalle de tarea o null si no se encuentra.</returns>
     public async Task<TaskDetailResponseDto?> GetTaskByIdAsync(Guid id)
@@ -62,9 +68,9 @@ public class TaskQueryService : ITaskQueryService
         return response;
     }
 
-    /// <summary>
+    /// <remarks>
     /// Obtiene tareas filtradas por su estado, mapeándolas a DTOs de respuesta de tareas para ser consumidos por el frontend.
-    /// </summary>
+    /// </remarks>
     /// <param name="status">El estado de las tareas a obtener.</param>
     /// <returns>Una lista de DTOs de respuesta de tareas.</returns>
     public async Task<IEnumerable<TaskResponseDto>> GetTasksByStatusAsync(TaskState status)
@@ -73,9 +79,9 @@ public class TaskQueryService : ITaskQueryService
         return tasks.Adapt<IEnumerable<TaskResponseDto>>();
     }
 
-    /// <summary>
+    /// <remarks>
     /// Busca tareas por una palabra clave, mapeándolas a DTOs de respuesta de tareas para ser consumidos por el frontend.
-    /// </summary>
+    /// </remarks>
     /// <param name="keyword">La palabra clave para buscar tareas.</param>
     /// <returns>Una lista de DTOs de respuesta de tareas.</returns>
     public async Task<IEnumerable<TaskResponseDto>> SearchTasksAsync(string keyword)

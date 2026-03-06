@@ -4,11 +4,15 @@ using SharpTask.Infrastructure.Repositories.Base;
 
 namespace SharpTask.Infrastructure.Repositories;
 
+/// <summary>
+/// Repositorio concreto para manejar las operaciones CRUD y demas
+/// de las notas (NoteItem) utilizando un archivo JSON como almacenamiento.
+/// </summary>
 public class NoteRepository : JsonBaseRepo<NoteItem>, INoteRepository
 {
-    /// <summary>
+    /// <remarks>
     /// Constructor del repositorio de notas que recibe la ruta del archivo JSON donde se almacenan las notas. Este constructor llama al constructor base de JsonBaseRepo para inicializar el repositorio con la ruta proporcionada.
-    /// </summary>
+    /// </remarks>
     /// <param name="filePath">La ruta del archivo JSON donde se almacenan las notas.</param>
     public NoteRepository(string filePath)
         : base(filePath) { }
@@ -18,29 +22,29 @@ public class NoteRepository : JsonBaseRepo<NoteItem>, INoteRepository
     // que es la implementacion directa de IBaseRepository<NoteItem>
     // =================================
 
-    /// <summary>
+    /// <remarks>
     /// Obtiene todas las notas almacenadas en el repositorio.
-    /// </summary>
+    /// </remarks>
     /// <returns>Una lista de objetos NoteItem.</returns>
     public async Task<IEnumerable<NoteItem>> GetAllAsync() => await base.LoadAsync();
 
-    /// <summary>
+    /// <remarks>
     /// Obtiene una nota por su identificador único (ID).
-    /// </summary>
+    /// </remarks>
     /// <param name="id">El identificador único de la nota.</param>
     /// <returns>La nota encontrada o null si no existe.</returns>
     public async Task<NoteItem?> GetByIdAsync(Guid id) => await base.FindAsync(x => x.Id == id);
 
-    /// <summary>
+    /// <remarks>
     /// Verifica si una nota con el ID especificado existe en el repositorio.
-    /// </summary>
+    /// </remarks>
     /// <param name="id">El identificador único de la nota.</param>
     /// <returns>True si la nota existe, false en caso contrario.</returns>
     public async Task<bool> ExistsAsync(Guid id) => (await base.FindAsync(x => x.Id == id)) != null;
 
-    /// <summary>
+    /// <remarks>
     /// Agrega una nueva nota al JSON.
-    /// </summary>
+    /// </remarks>
     /// <param name="note">La nota a agregar.</param>
     /// <returns>La nota agregada.</returns>
     public async Task<NoteItem> AddAsync(NoteItem note)
@@ -49,9 +53,9 @@ public class NoteRepository : JsonBaseRepo<NoteItem>, INoteRepository
         return note;
     }
 
-    /// <summary>
+    /// <remarks>
     /// Actualiza una nota existente en el JSON.
-    /// </summary>
+    /// </remarks>
     /// <param name="note">La nota a actualizar.</param>
     /// <returns>La nota actualizada si se actualizó correctamente, o null si no se encontró o no se pudo actualizar.</returns>
     public async Task<NoteItem?> UpdateAsync(NoteItem note)
@@ -60,9 +64,9 @@ public class NoteRepository : JsonBaseRepo<NoteItem>, INoteRepository
         return updatedNote ? note : null;
     }
 
-    /// <summary>
+    /// <remarks>
     /// Elimina una nota por su ID del JSON.
-    /// </summary>
+    /// </remarks>
     /// <param name="id">El identificador único de la nota a eliminar.</param>
     /// <returns>True si la nota fue eliminada, false en caso contrario.</returns>
     public async Task<bool> DeleteAsync(Guid id) => await base.DeleteAsync(x => x.Id == id);
@@ -73,9 +77,9 @@ public class NoteRepository : JsonBaseRepo<NoteItem>, INoteRepository
     // definidos en INoteRepository para NoteItem
     // =================================
 
-    /// <summary>
+    /// <remarks>
     /// Obtiene todas las notas asociadas a una tarea específica por su ID. Este método busca en el repositorio todas las notas que tengan un TaskId que coincida con el ID de la tarea proporcionada y devuelve una lista de esas notas.
-    /// </summary>
+    /// </remarks>
     /// <param name="taskId">El identificador único de la tarea.</param>
     /// <returns>Una lista de objetos NoteItem asociados a la tarea.</returns>
     public async Task<IEnumerable<NoteItem>> GetNotesByTaskIdAsync(Guid taskId)
@@ -83,9 +87,9 @@ public class NoteRepository : JsonBaseRepo<NoteItem>, INoteRepository
         return await base.FindManyAsync(x => x.TaskId == taskId);
     }
 
-    /// <summary>
+    /// <remarks>
     /// Elimina todas las notas asociadas a una tarea específica por su ID. Devuelve true si al menos una nota fue eliminada correctamente, o false si alguna nota no pudo ser eliminada.
-    /// </summary>
+    /// </remarks>
     /// <param name="taskId">El identificador único de la tarea.</param>
     /// <returns>True si al menos una nota fue eliminada correctamente, false en caso contrario.</returns>
     public async Task<bool> DeleteNotesByTaskIdAsync(Guid taskId)

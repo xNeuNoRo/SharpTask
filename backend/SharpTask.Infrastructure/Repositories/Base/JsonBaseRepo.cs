@@ -3,25 +3,45 @@ using SharpTask.Application.Interfaces.Repositories.Base;
 
 namespace SharpTask.Infrastructure.Repositories.Base;
 
+/// <summary>
+/// Clase base abstracta para repositorios que manejan archivos JSON,
+/// proporcionando métodos comunes para cargar, guardar, agregar,
+/// actualizar y eliminar items en un archivo JSON, con manejo de concurrencia mediante
+/// semaforos para evitar problemas al acceder a los archivos desde diferentes repositorios
+/// o hilos, y con opciones de serialización configuradas para facilitar la lectura y escritura
+/// de los archivos JSON, además de métodos adicionales para incluir items relacionados usando
+/// lógica de inclusión inyectada.
+/// </summary>
+/// <typeparam name="T">El tipo de objeto que se va a almacenar en el archivo JSON </typeparam>
 public abstract class JsonBaseRepo<T>
     where T : class // Restringimos T a ser una clase (referencia) para evitar problemas con tipos primitivos
 {
-    // Ruta del archivo JSON
+    /// <summary>
+    /// Ruta del archivo JSON donde se almacenan los items de tipo T.
+    /// </summary>
     protected readonly string _filePath;
 
-    // Cache para almacenar temporalmente los items cargados desde el archivo JSON
-    // y ahorrar lecturas al disco cuando se realizan multiples operaciones seguidas
+    /// <summary>
+    /// Cache para almacenar temporalmente los items cargados desde el archivo JSON
+    /// y ahorrar lecturas al disco cuando se realizan multiples operaciones seguidas.
+    /// </summary>
     protected List<T>? _cache;
 
-    // Opciones de serializacion JSON
+    /// <summary>
+    /// Opciones de serialización para configurar cómo se lee y escribe el JSON.
+    /// </summary>
     protected readonly JsonSerializerOptions _options;
 
-    // Referencia al semaforo de este archivo en el diccionario global del JsonFileLockManager para sincronizar el acceso a este archivo
+    /// <summary>
+    /// Referencia al semaforo específico para este archivo JSON, obtenido del JsonFileLockManager,
+    /// que se utiliza para sincronizar el acceso a este archivo y evitar problemas de concurrencia
+    /// al leer o escribir en el archivo desde diferentes repositorios o hilos.
+    /// </summary>
     private readonly SemaphoreSlim _fileLock;
 
-    /// <summary>
+    /// <remarks>
     /// Constructor de la clase base para repositorios que manejan archivos JSON.
-    /// </summary>
+    /// </remarks>
     /// <param name="filePath">La ruta del archivo JSON.</param>
     protected JsonBaseRepo(string filePath)
     {
@@ -41,9 +61,9 @@ public abstract class JsonBaseRepo<T>
         _fileLock = JsonFileLockManager.GetOrCreateLock(filePath);
     }
 
-    /// <summary>
+    /// <remarks>
     /// Metodo para asegurar que el archivo JSON exista antes de intentar leerlo o escribirlo.
-    /// </summary>
+    /// </remarks>
     private async Task EnsureFileAsync()
     {
         // Obtiene el directorio del archivo
@@ -65,9 +85,9 @@ public abstract class JsonBaseRepo<T>
     // Al usar semaforo por archivo
     // =================================
 
-    /// <summary>
+    /// <remarks>
     /// Metodo privado para cargar todos los items del archivo JSON, sin semaforo para evitar posibles deadlocks al usar semaforos en operaciones publicas que llaman a este metodo.
-    /// </summary>
+    /// </remarks>
     /// <returns>Una lista de objetos T cargados desde el archivo JSON.</returns>
     private async Task<List<T>> LoadInternalAsync()
     {
@@ -115,9 +135,9 @@ public abstract class JsonBaseRepo<T>
         }
     }
 
-    /// <summary>
+    /// <remarks>
     /// Metodo privado para guardar una lista completa de items en el archivo JSON, sin semaforo para evitar posibles deadlocks al usar semaforos en operaciones publicas que llaman a este metodo.
-    /// </summary>
+    /// </remarks>
     /// <param name="items">La lista de objetos T a guardar en el archivo JSON.</param>
     /// <returns>Una tarea que representa la operación de guardado.</returns>
     private async Task SaveInternalAsync(List<T> items)
@@ -139,9 +159,9 @@ public abstract class JsonBaseRepo<T>
     // archivos JSON desde diferentes repositorios o hilos.
     // =================================
 
-    /// <summary>
+    /// <remarks>
     /// Metodo para cargar todos los items del archivo JSON.
-    /// </summary>
+    /// </remarks>
     /// <returns>Una lista de objetos T cargados desde el archivo JSON.</returns>
     public async Task<List<T>> LoadAsync()
     {
@@ -163,9 +183,9 @@ public abstract class JsonBaseRepo<T>
         }
     }
 
-    /// <summary>
+    /// <remarks>
     /// Metodo para guardar una lista completa de items en el archivo JSON, sobrescribiendo lo que haya.
-    /// </summary>
+    /// </remarks>
     /// <param name="items">La lista de objetos T a guardar en el archivo JSON.</param>
     /// <returns>Una tarea asincronica que representa la operacion de guardado.</returns>
     public async Task SaveAllAsync(List<T> items)
@@ -187,9 +207,9 @@ public abstract class JsonBaseRepo<T>
         }
     }
 
-    /// <summary>
+    /// <remarks>
     /// Metodo para agregar un nuevo item al archivo JSON sin necesidad de cargar y guardar toda la lista manualmente.
-    /// </summary>
+    /// </remarks>
     /// <param name="item">El item a agregar.</param>
     /// <returns>Una tarea asincronica que representa la operacion de agregado.</returns>
     public async Task AppendAsync(T item)
@@ -213,9 +233,9 @@ public abstract class JsonBaseRepo<T>
         }
     }
 
-    /// <summary>
+    /// <remarks>
     /// Metodo para actualizar un item que cumpla con la condicion dada por el callback, reemplazandolo por un nuevo item dado.
-    /// </summary>
+    /// </remarks>
     /// <param name="cb">El callback que define la condición a cumplir.</param>
     /// <param name="newItem">El nuevo item con el que se reemplazará el item encontrado.</param>
     /// <returns>True si se actualizó correctamente, false si no se encontró ningún item que cumpla con la condición.</returns>
@@ -254,10 +274,10 @@ public abstract class JsonBaseRepo<T>
         }
     }
 
-    /// <summary>
+    /// <remarks>
     /// Metodo para eliminar items que cumplan con la condicion dada por el callback.
     /// EJ: Si cb es x => x.Id == 5, se eliminan todos los items que tengan Id igual a 5.
-    /// </summary>
+    /// </remarks>
     /// <param name="cb">El callback que define la condición a cumplir.</param>
     /// <returns>True si se eliminó al menos un item, false si no se eliminó ninguno.</returns>
     public async Task<bool> DeleteAsync(Func<T, bool> cb)
@@ -303,9 +323,9 @@ public abstract class JsonBaseRepo<T>
     // y a su vez estos son seguros ante concurrencia gracias a los semaforos
     // =================================
 
-    /// <summary>
+    /// <remarks>
     /// Metodo para encontrar todos los items que cumplan con la condicion dada por el callback.
-    /// </summary>
+    /// </remarks>
     /// <param name="cb">El callback que define la condición a cumplir.</param>
     /// <returns>Una lista de items que cumplen con la condición dada.</returns>
     public async Task<List<T>> FindManyAsync(Func<T, bool> cb)
@@ -317,10 +337,10 @@ public abstract class JsonBaseRepo<T>
         return items.Where(cb).ToList();
     }
 
-    /// <summary>
+    /// <remarks>
     /// Metodo para encontrar el primer item que cumpla con la condicion dada por el callback.
     /// Ej: X => X.Id == 5, se busca el primer item que tenga Id igual a 5.
-    /// </summary>
+    /// </remarks>
     /// <param name="cb">El callback que define la condición a cumplir.</param>
     /// <returns>El primer item que cumpla con la condición, o null si no se encuentra ninguno.</returns>
     public async Task<T?> FindAsync(Func<T, bool> cb)
@@ -333,10 +353,10 @@ public abstract class JsonBaseRepo<T>
     // Metodos extra al repo
     // =================================
 
-    /// <summary>
+    /// <remarks>
     /// Metodo para encontrar un item con su lista de items relacionados, usando un repo relacionado y una logica de inclusion inyectada.
     /// EJ: Si tenemos un repo de Tareas y un repo de notas, podemos usar este metodo para encontrar una tarea con su lista de notas relacionadas, inyectando la logica de inclusion que separe las notas por Id de tarea.
-    /// </summary>
+    /// </remarks>
     /// <typeparam name="TRelated"></typeparam>
     /// <param name="cb">El callback que define la condición a cumplir para encontrar el item principal.</param>
     /// <param name="relatedRepo">El repo de los items relacionados.</param>
@@ -367,13 +387,13 @@ public abstract class JsonBaseRepo<T>
         return item;
     }
 
-    /// <summary>
+    /// <remarks>
     /// Metodo para cargar todos los items con su lista de items relacionados,
     /// usando un repo relacionado y una logica de inclusion inyectada.
     /// EJ: Si tenemos un repo de Tareas y un repo de notas, podemos usar este metodo para cargar
     /// todas las tareas con su lista de notas relacionadas, inyectando la logica de inclusion
     /// que separe las notas por Id de tarea.
-    /// </summary>
+    /// </remarks>
     /// <typeparam name="TRelated">El tipo de los items relacionados.</typeparam>
     /// <param name="relatedRepo">El repo de los items relacionados.</param>
     /// <param name="includeLogic">La logica de inclusion que se aplica a cada item principal con sus items relacionados.</param>
@@ -398,13 +418,13 @@ public abstract class JsonBaseRepo<T>
         return items;
     }
 
-    /// <summary>
+    /// <remarks>
     /// Metodo para encontrar todos los items que cumplan con la condicion dada por el callback,
     /// con su lista de items relacionados, usando un repo relacionado y una logica de inclusion inyectada.
     /// EJ: Si tenemos un repo de Tareas y un repo de notas, podemos usar este metodo
     /// para encontrar todas las tareas que esten pendientes, con su lista de notas relacionadas,
     /// inyectando la logica de inclusion que separe las notas por Id de tarea.
-    /// </summary>
+    /// </remarks>
     /// <typeparam name="TRelated">El tipo de los items relacionados.</typeparam>
     /// <param name="cb">El callback que define la condicion para filtrar los items principales.</param>
     /// <param name="relatedRepo">El repo de los items relacionados.</param>
