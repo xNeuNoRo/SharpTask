@@ -2,10 +2,15 @@ using Mapster;
 using SharpTask.Application.DTOs.Note;
 using SharpTask.Application.Interfaces.Repositories;
 using SharpTask.Application.Interfaces.Services;
-using SharpTask.Domain.Entities;
 
 namespace SharpTask.Application.Services;
 
+/// <summary>
+/// Servicio de consultas para las notas, 
+/// encargado de manejar la lógica de negocio relacionada con la obtención de notas, 
+/// incluyendo la recuperación de todas las notas, la obtención de una nota por su ID 
+/// y la obtención de notas asociadas a una tarea específica.
+/// </summary>
 public class NoteQueryService : INoteQueryService
 {
     private readonly INoteRepository _noteRepo;

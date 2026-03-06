@@ -8,6 +8,11 @@ using SharpTask.Domain.Interfaces;
 
 namespace SharpTask.Application.Services;
 
+/// <summary>
+/// Servicio de comandos para las tareas, encargado de manejar 
+/// la lógica de negocio relacionada con la creación, actualización 
+/// y eliminación de tareas, así como la gestión de su estado y el historial de cambios.
+/// </summary>
 public class TaskCommandService : ITaskCommandService
 {
     private readonly ITaskRepository _taskRepo;

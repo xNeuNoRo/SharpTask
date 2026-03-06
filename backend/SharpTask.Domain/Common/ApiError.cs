@@ -1,9 +1,25 @@
 namespace SharpTask.Domain.Common;
 
+/// <summary>
+/// Clase que representa un error en la API, con un código de error,
+/// un mensaje descriptivo y opcionalmente detalles adicionales sobre el error,
+/// que pueden ser utilizados para proporcionar información más específica sobre el error ocurrido.
+/// </summary>
 public class ApiError
 {
+    /// <summary>
+    /// Código de error
+    /// </summary>
     public string Code { get; init; }
+
+    /// <summary>
+    /// Mensaje descriptivo del error
+    /// </summary>
     public string Message { get; init; }
+
+    /// <summary>
+    /// Detalles adicionales del error
+    /// </summary>
     public object? Details { get; init; }
 
     /// <remarks>

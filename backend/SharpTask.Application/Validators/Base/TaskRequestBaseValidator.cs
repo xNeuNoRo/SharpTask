@@ -10,6 +10,11 @@ namespace SharpTask.Application.Validators.Base;
 public class TaskRequestBaseValidator<T> : AbstractValidator<T>
     where T : TaskRequestBase
 {
+    /// <summary>
+    /// Constructor que define las reglas de validación para las solicitudes de tareas,
+    /// asegurando que el título no esté vacío, que la descripción no exceda los
+    /// 1024 caracteres y que el estado de la tarea sea un valor válido del enum TaskState.
+    /// </summary>
     public TaskRequestBaseValidator()
     {
         RuleFor(x => x.Title)
