@@ -69,13 +69,24 @@ public class ExceptionMiddleware
         ILogger logger
     )
     {
+        // Verificamos si la respuesta ya ha comenzado a enviarse al cliente, 
+        // en cuyo caso no podemos modificarla para devolver un error adecuado, 
+        // por lo que simplemente loggeamos una advertencia y terminamos la tarea sin hacer nada más
+        if (context.Response.HasStarted)
+        {
+            logger.LogWarning(
+                "No se puede manejar la excepción porque la respuesta ya ha comenzado a enviarse al cliente."
+            );
+            return Task.CompletedTask;
+        }
+
         // Configuramos la respuesta HTTP para devolver un JSON
         context.Response.ContentType = "application/json";
 
         // Por defecto, asumimos un error 500 - Internal Server Error
         var statusCode = (int)HttpStatusCode.InternalServerError;
         var message = "Ha ocurrido un error inesperado en el servidor.";
-        string? errorCode = ErrorCodes.InternalError;
+        string errorCode = ErrorCodes.InternalError;
 
         // Pero, si la excepción es una AppException, podemos extraer el código de error y el mensaje específico
         if (exception is AppException appEx)

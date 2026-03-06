@@ -87,6 +87,8 @@ public class ApiResponse<T>
     /// <remarks>
     /// Método estático de conveniencia para crear una respuesta de error,
     /// recibe un código de error y un mensaje, y devuelve un nuevo ApiResponse con esa
+    /// información de error, construyendo internamente un nuevo objeto 
+    /// ApiError con el código y mensaje proporcionados.
     /// </remarks>
     /// <param name="code">código de error</param>
     /// <param name="message">mensaje de error</param>

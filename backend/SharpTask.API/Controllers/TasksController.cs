@@ -190,6 +190,7 @@ public class TasksController : BaseApiController
         typeof(ApiResponse<IEnumerable<TaskResponseDto>>),
         StatusCodes.Status200OK
     )]
+    [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> SearchByKeyword([FromQuery] string keyword)
     {
         var tasks = await _queryService.SearchTasksAsync(keyword);

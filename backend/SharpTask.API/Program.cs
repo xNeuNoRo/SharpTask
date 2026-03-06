@@ -92,11 +92,11 @@ if (app.Environment.IsDevelopment())
     app.MapScalarApiReference("/docs");
 }
 
-// Redirigimos todas las solicitudes HTTP a HTTPS para mayor seguridad
-app.UseHttpsRedirection();
-
 // Habilitamos CORS con la politica "DefaultPolicy" que definimos anteriormente, para permitir solicitudes desde el frontend
 app.UseCors("DefaultPolicy");
+
+// Redirigimos todas las solicitudes HTTP a HTTPS para mayor seguridad
+app.UseHttpsRedirection();
 
 // Habilitamos la autorización, aunque en este punto no hemos configurado nada relacionado a la autorización, es una buena práctica tenerlo en el pipeline (por si acaso) por si se necesita en el futuro
 app.UseAuthorization();
