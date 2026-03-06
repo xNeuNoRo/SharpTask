@@ -17,9 +17,10 @@ public interface INoteQueryService
     /// <summary>
     /// Obtiene una nota por su identificador único (GUID)
     /// </summary>
+    /// <param name="taskId">El identificador único de la tarea a la que pertenece la nota</param>
     /// <param name="id">El identificador único de la nota</param>
     /// <returns>La nota encontrada o null si no se encuentra</returns>
-    Task<NoteResponseDto?> GetNoteByIdAsync(Guid id);
+    Task<NoteResponseDto?> GetNoteByIdAsync(Guid taskId, Guid id);
 
     /// <summary>
     /// Obtiene todas las notas asociadas a una tarea específica

@@ -18,15 +18,17 @@ public interface INoteCommandService
     /// <summary>
     /// Actualiza una nota existente por su ID
     /// </summary>
+    /// <param name="taskId">El identificador único de la tarea a la que pertenece la nota</param>
     /// <param name="id">El identificador único de la nota</param>
     /// <param name="request">Los datos para actualizar la nota</param>
     /// <returns>La nota actualizada o null si no se encuentra</returns>
-    Task<NoteResponseDto?> UpdateNoteAsync(Guid id, UpdateNoteRequestDto request);
+    Task<NoteResponseDto?> UpdateNoteAsync(Guid taskId, Guid id, UpdateNoteRequestDto request);
 
     /// <summary>
     /// Elimina una nota por su ID
     /// </summary>
+    /// <param name="taskId">El identificador único de la tarea a la que pertenece la nota</param>
     /// <param name="id">El identificador único de la nota</param>
     /// <returns>true si se elimina correctamente, false en caso contrario</returns>
-    Task<bool> DeleteNoteAsync(Guid id);
+    Task<bool> DeleteNoteAsync(Guid taskId, Guid id);
 }

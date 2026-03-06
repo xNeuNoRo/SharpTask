@@ -6,9 +6,9 @@ using SharpTask.Application.Interfaces.Services;
 namespace SharpTask.Application.Services;
 
 /// <summary>
-/// Servicio de consultas para las notas, 
-/// encargado de manejar la lógica de negocio relacionada con la obtención de notas, 
-/// incluyendo la recuperación de todas las notas, la obtención de una nota por su ID 
+/// Servicio de consultas para las notas,
+/// encargado de manejar la lógica de negocio relacionada con la obtención de notas,
+/// incluyendo la recuperación de todas las notas, la obtención de una nota por su ID
 /// y la obtención de notas asociadas a una tarea específica.
 /// </summary>
 public class NoteQueryService : INoteQueryService
@@ -16,8 +16,8 @@ public class NoteQueryService : INoteQueryService
     private readonly INoteRepository _noteRepo;
 
     /// <remarks>
-    /// Constructor del servicio de consultas de notas que recibe una instancia del 
-    /// repositorio de notas para acceder a los datos de las notas y proporcionar la 
+    /// Constructor del servicio de consultas de notas que recibe una instancia del
+    /// repositorio de notas para acceder a los datos de las notas y proporcionar la
     /// funcionalidad de consulta relacionada con las notas.
     /// </remarks>
     /// <param name="noteRepo">La instancia del repositorio de notas.</param>
@@ -40,15 +40,23 @@ public class NoteQueryService : INoteQueryService
     /// Obtiene una nota por su ID, mapeándola a un DTO de respuesta de nota para proporcionar
     /// la información necesaria al frontend. Si la nota no se encuentra, devuelve null.
     /// </remarks>
+    /// <param name="taskId">El ID de la tarea a la que pertenece la nota.</param>
     /// <param name="id">El ID de la nota a obtener.</param>
     /// <returns>
     /// Una tarea que representa la operación asincrónica,
     /// con un DTO de respuesta de nota o null si no se encuentra.
     /// </returns>
-    public async Task<NoteResponseDto?> GetNoteByIdAsync(Guid id)
+    public async Task<NoteResponseDto?> GetNoteByIdAsync(Guid taskId, Guid id)
     {
         var note = await _noteRepo.GetByIdAsync(id);
-        return note?.Adapt<NoteResponseDto>();
+
+        // Verificamos que la nota exista y que esté asociada a la tarea especificada antes de mapearla a un DTO de respuesta
+        if (note is null || note.TaskId != taskId)
+        {
+            return null;
+        }
+
+        return note.Adapt<NoteResponseDto>();
     }
 
     /// <remarks>

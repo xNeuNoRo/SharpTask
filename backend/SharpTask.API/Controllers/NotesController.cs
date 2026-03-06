@@ -74,7 +74,7 @@ public class NotesController : BaseApiController
     [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetById(Guid taskId, Guid id)
     {
-        var note = await _queryService.GetNoteByIdAsync(id);
+        var note = await _queryService.GetNoteByIdAsync(taskId, id);
         return SuccessOrNotFound(note, ErrorCodes.NoteNotFound, "La nota solicitada no existe.");
     }
 
@@ -126,7 +126,7 @@ public class NotesController : BaseApiController
         [FromBody] UpdateNoteRequestDto request
     )
     {
-        var note = await _commandService.UpdateNoteAsync(id, request);
+        var note = await _commandService.UpdateNoteAsync(taskId, id, request);
         return SuccessOrNotFound(
             note,
             ErrorCodes.NoteNotFound,
@@ -153,7 +153,7 @@ public class NotesController : BaseApiController
     [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Delete(Guid taskId, Guid id)
     {
-        var deleted = await _commandService.DeleteNoteAsync(id);
+        var deleted = await _commandService.DeleteNoteAsync(taskId, id);
         return SuccessOrNotFound(
             deleted,
             ErrorCodes.NoteNotFound,
