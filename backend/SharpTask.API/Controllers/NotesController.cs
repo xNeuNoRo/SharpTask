@@ -51,6 +51,7 @@ public class NotesController : BaseApiController
         typeof(ApiResponse<IEnumerable<NoteResponseDto>>),
         StatusCodes.Status200OK
     )]
+    [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetAll(Guid taskId)
     {
         var notes = await _queryService.GetNotesByTaskIdAsync(taskId);

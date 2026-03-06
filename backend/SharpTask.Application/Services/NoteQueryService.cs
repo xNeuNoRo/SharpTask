@@ -72,11 +72,7 @@ public class NoteQueryService : INoteQueryService
     /// <returns>Una lista de DTOs de respuesta de notas.</returns>
     public async Task<IEnumerable<NoteResponseDto>> GetNotesByTaskIdAsync(Guid taskId)
     {
-        // Verificamos si la tarea a la que se intenta asociar la nota existe antes de obtener las notas asociadas a esa tarea
-        var existingTask = await _taskRepo.GetByIdAsync(taskId);
-
-        // Si la tarea no existe, lanzamos una excepción de tipo AppException con un mensaje de error indicando que la tarea no existe
-        if (existingTask is null || existingTask.Id != taskId)
+        if (!await ExistsTask(taskId))
         {
             throw AppException.NotFound(
                 "La tarea especificada no existe.",
@@ -84,9 +80,34 @@ public class NoteQueryService : INoteQueryService
             );
         }
 
-        // Obtenemos las notas asociadas a la tarea utilizando el repositorio de notas 
+        // Obtenemos las notas asociadas a la tarea utilizando el repositorio de notas
         // y las mapeamos a DTOs de respuesta para ser consumidos por el frontend
         var notes = await _noteRepo.GetNotesByTaskIdAsync(taskId);
         return notes.Adapt<IEnumerable<NoteResponseDto>>();
+    }
+
+    /// <summary>
+    /// Valida si una tarea existe en la base de datos por su ID, utilizando el repositorio de tareas,
+    /// esta validación es necesaria para asegurarnos de que las notas que se intentan obtener
+    /// están asociadas a una tarea válida, si la tarea no existe, la validación falla y se devuelve false,
+    /// lo que permite manejar adecuadamente el caso en el que se intentan obtener notas para
+    /// una tarea que no existe, evitando así errores
+    /// y proporcionando una respuesta clara al frontend sobre la inexistencia de la tarea.
+    /// </summary>
+    /// <param name="taskId">El ID de la tarea a validar.</param>
+    /// <returns>Un valor booleano que indica si la tarea existe.</returns>
+    private async Task<bool> ExistsTask(Guid taskId)
+    {
+        // Verificamos si la tarea a la que se intenta asociar la nota existe antes de obtener las notas asociadas a esa tarea
+        var existingTask = await _taskRepo.GetByIdAsync(taskId);
+
+        // Si la tarea no existe, retornamos false indicando que la validación falló
+        if (existingTask is null)
+        {
+            return false;
+        }
+
+        // Si la tarea pasa todas las validaciones, retornamos true indicando que la tarea es válida y existe en la base de datos
+        return true;
     }
 }
