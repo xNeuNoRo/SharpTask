@@ -98,16 +98,6 @@ public class NoteQueryService : INoteQueryService
     /// <returns>Un valor booleano que indica si la tarea existe.</returns>
     private async Task<bool> ExistsTask(Guid taskId)
     {
-        // Verificamos si la tarea a la que se intenta asociar la nota existe antes de obtener las notas asociadas a esa tarea
-        var existingTask = await _taskRepo.GetByIdAsync(taskId);
-
-        // Si la tarea no existe, retornamos false indicando que la validación falló
-        if (existingTask is null)
-        {
-            return false;
-        }
-
-        // Si la tarea pasa todas las validaciones, retornamos true indicando que la tarea es válida y existe en la base de datos
-        return true;
+        return await _taskRepo.ExistsAsync(taskId);
     }
 }
