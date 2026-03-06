@@ -2,6 +2,7 @@ using Mapster;
 using SharpTask.Application.DTOs.Note;
 using SharpTask.Application.Interfaces.Repositories;
 using SharpTask.Application.Interfaces.Services;
+using SharpTask.Domain.Exceptions;
 
 namespace SharpTask.Application.Services;
 
@@ -14,6 +15,7 @@ namespace SharpTask.Application.Services;
 public class NoteQueryService : INoteQueryService
 {
     private readonly INoteRepository _noteRepo;
+    private readonly ITaskRepository _taskRepo;
 
     /// <remarks>
     /// Constructor del servicio de consultas de notas que recibe una instancia del
@@ -21,9 +23,11 @@ public class NoteQueryService : INoteQueryService
     /// funcionalidad de consulta relacionada con las notas.
     /// </remarks>
     /// <param name="noteRepo">La instancia del repositorio de notas.</param>
-    public NoteQueryService(INoteRepository noteRepo)
+    /// <param name="taskRepo">La instancia del repositorio de tareas.</param>
+    public NoteQueryService(INoteRepository noteRepo, ITaskRepository taskRepo)
     {
         _noteRepo = noteRepo;
+        _taskRepo = taskRepo;
     }
 
     /// <remarks>
@@ -68,6 +72,20 @@ public class NoteQueryService : INoteQueryService
     /// <returns>Una lista de DTOs de respuesta de notas.</returns>
     public async Task<IEnumerable<NoteResponseDto>> GetNotesByTaskIdAsync(Guid taskId)
     {
+        // Verificamos si la tarea a la que se intenta asociar la nota existe antes de obtener las notas asociadas a esa tarea
+        var existingTask = await _taskRepo.GetByIdAsync(taskId);
+
+        // Si la tarea no existe, lanzamos una excepción de tipo AppException con un mensaje de error indicando que la tarea no existe
+        if (existingTask is null || existingTask.Id != taskId)
+        {
+            throw AppException.NotFound(
+                "La tarea especificada no existe.",
+                ErrorCodes.TaskNotFound
+            );
+        }
+
+        // Obtenemos las notas asociadas a la tarea utilizando el repositorio de notas 
+        // y las mapeamos a DTOs de respuesta para ser consumidos por el frontend
         var notes = await _noteRepo.GetNotesByTaskIdAsync(taskId);
         return notes.Adapt<IEnumerable<NoteResponseDto>>();
     }
