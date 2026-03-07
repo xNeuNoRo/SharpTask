@@ -106,6 +106,25 @@ export async function deleteTask(id: Task["id"]): Promise<void> {
 // ==============================================
 
 /**
+ * @description Busca tareas por palabra clave enviando una solicitud a la API, valida la respuesta y maneja errores
+ * @param keyword La palabra clave para buscar tareas, debe ser una cadena no vacía
+ * @returns Una promesa que resuelve con un array de tareas que coinciden con la búsqueda y validadas o rechaza con un error manejado
+ */
+export async function searchTask(keyword: string): Promise<Task[]> {
+  try {
+    // Realiza la solicitud GET al recurso de tareas con el parámetro de búsqueda
+    const { data } = await api.get(`${RESOURCE}/search`, {
+      params: { keyword },
+    });
+    // Valida la respuesta de la API contra el esquema de tareas y devuelve los datos validados
+    return validateApiRes(data, TasksSchema);
+  } catch (err) {
+    // Maneja cualquier error que ocurra durante la solicitud o validación
+    handleApiError(err);
+  }
+}
+
+/**
  * @description Actualiza solo el estado de una tarea enviando los datos a la API, valida la respuesta y maneja errores
  * @param taskData Los datos de la tarea a actualizar,
  * debe incluir el ID y el nuevo estado, y cumplir con el esquema de UpdateTaskStatusFormData
