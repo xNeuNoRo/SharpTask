@@ -1,7 +1,18 @@
 "use server";
 
-import { createTask, deleteTask, updateTask } from "@/api/TasksAPI";
-import { CreateTaskFormData, Task, UpdateTaskFormData } from "@/schemas/task";
+import {
+  completeTask,
+  createTask,
+  deleteTask,
+  updateTask,
+  updateTaskStatus,
+} from "@/api/TasksAPI";
+import {
+  CreateTaskFormData,
+  Task,
+  UpdateTaskFormData,
+  UpdateTaskStatusFormData,
+} from "@/schemas/task";
 import { revalidatePath } from "next/cache";
 
 /**
@@ -32,6 +43,36 @@ export async function updateTaskAction(
   // Llamamos a la función de la API para actualizar la tarea con el ID y los datos de actualización proporcionados
   const updatedTask = await updateTask(taskData);
   // Después de actualizar la tarea, revalidamos la ruta para actualizar la interfaz de usuario
+  revalidatePath("/", "layout");
+  // Devolvemos la tarea actualizada para que pueda ser utilizada en la interfaz de usuario si es necesario
+  return updatedTask;
+}
+
+/**
+ * @description Esta función se encarga de actualizar el estado de una tarea existente utilizando los datos proporcionados.
+ * @param taskData - Un objeto que contiene los datos necesarios para actualizar el estado de una tarea, incluyendo el ID de la tarea a actualizar y el nuevo estado que se desea asignar.
+ * @returns La tarea actualizada con el nuevo estado, que puede ser utilizada en la interfaz de usuario para mostrar los cambios realizados o para otras operaciones relacionadas.
+ */
+export async function updateTaskStatusAction(
+  taskData: UpdateTaskStatusFormData,
+): Promise<Task> {
+  // Llamamos a la función de la API para actualizar el estado de la tarea con el ID y los datos de actualización proporcionados
+  const updatedTask = await updateTaskStatus(taskData);
+  // Después de actualizar el estado de la tarea, revalidamos la ruta para actualizar la interfaz de usuario
+  revalidatePath("/", "layout");
+  // Devolvemos la tarea actualizada para que pueda ser utilizada en la interfaz de usuario si es necesario
+  return updatedTask;
+}
+
+/**
+ * @description Esta función sse encarga de completar una tarea existente utilizando su ID.
+ * @param taskId - El ID de la tarea que se desea completar.
+ * @returns La tarea completada, que puede ser utilizada en la interfaz de usuario para mostrar los cambios realizados o para otras operaciones relacionadas.
+ */
+export async function completeTaskAction(taskId: Task["id"]): Promise<Task> {
+  // Llamamos a la función de la API para actualizar el estado de la tarea a completada utilizando el ID de la tarea
+  const updatedTask = await completeTask(taskId);
+  // Después de completar la tarea, revalidamos la ruta para actualizar la interfaz de usuario
   revalidatePath("/", "layout");
   // Devolvemos la tarea actualizada para que pueda ser utilizada en la interfaz de usuario si es necesario
   return updatedTask;
