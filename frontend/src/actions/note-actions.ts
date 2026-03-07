@@ -1,3 +1,5 @@
+"use server";
+
 import { createNote, deleteNote, updateNote } from "@/api/NotesAPI";
 import { CreateNoteFormData, Note, UpdateNoteFormData } from "@/schemas/notes";
 import { revalidatePath } from "next/cache";

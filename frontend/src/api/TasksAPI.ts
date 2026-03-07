@@ -4,6 +4,8 @@ import { api } from "@/lib/axios";
 import {
   CreateTaskFormData,
   Task,
+  TaskDetail,
+  TaskDetailSchema,
   TaskSchema,
   TasksSchema,
   UpdateTaskFormData,
@@ -38,12 +40,12 @@ export async function getTasks(): Promise<Task[]> {
  * @param id El ID de la tarea a obtener, debe ser un UUID válido según el esquema de tarea
  * @returns Una promesa que resuelve con la tarea validadas o rechaza con un error manejado
  */
-export async function getTaskById(id: Task["id"]): Promise<Task> {
+export async function getTaskById(id: Task["id"]): Promise<TaskDetail> {
   try {
     // Realiza la solicitud GET al recurso de tareas con el ID específico
     const { data } = await api.get(`${RESOURCE}/${id}`);
     // Valida la respuesta de la API contra el esquema de tarea y devuelve los datos validados
-    return validateApiRes(data, TaskSchema);
+    return validateApiRes(data, TaskDetailSchema);
   } catch (err) {
     // Maneja cualquier error que ocurra durante la solicitud o validación
     handleApiError(err);
