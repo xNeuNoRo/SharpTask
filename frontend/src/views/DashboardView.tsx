@@ -7,6 +7,7 @@ import EditTaskModal from "@/components/tasks/EditTaskModal";
 import TaskDetailsModal from "@/components/tasks/TaskDetailsModal";
 import { useTasks } from "@/hooks/tasks/useQueries";
 import { useQueryString } from "@/hooks/shared/useQueryString";
+import { Suspense } from "react";
 
 export default function DashboardView() {
   // Hook para manejar la navegación y manipulación de URLs con query strings
@@ -63,9 +64,11 @@ export default function DashboardView() {
       <TaskList tasks={tasks ?? []} canEdit={true} />
 
       {/* Modales gestionados por la URL */}
-      <AddTaskModal />
-      <EditTaskModal />
-      <TaskDetailsModal />
+      <Suspense fallback={null}>
+        <AddTaskModal />
+        <EditTaskModal />
+        <TaskDetailsModal />
+      </Suspense>
     </>
   );
 }
