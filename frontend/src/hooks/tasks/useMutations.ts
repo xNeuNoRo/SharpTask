@@ -33,8 +33,8 @@ export function useCreateTask() {
       queryClient.setQueryData(
         taskKeys.lists(),
         (oldData: Task[] | undefined) => {
-          // Si no hay datos previos, no hacemos nada
-          if (!oldData) return oldData;
+          // Si no hay datos previos, retornamos un nuevo array con la tarea creada
+          if (!oldData) return [data];
           // Si la tarea ya existe en la cache (lo cual no debería pasar pero por si acaso), no la agregamos de nuevo
           if (oldData.some((task) => task.id === data.id)) return oldData;
           // Agregamos la nueva tarea al inicio de la lista de tareas en la cache
