@@ -22,10 +22,9 @@ export default function Modal({
   open,
   close,
   children,
-}: ModalProps) {
+}: Readonly<ModalProps>) {
   return (
-    <>
-      <Transition appear show={open} as={Fragment}>
+    <Transition appear show={open} as={Fragment}>
         <Dialog as="div" className="relative z-10" onClose={close}>
           <TransitionChild
             as={Fragment}
@@ -66,6 +65,5 @@ export default function Modal({
           </div>
         </Dialog>
       </Transition>
-    </>
   );
 }
