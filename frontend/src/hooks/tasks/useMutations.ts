@@ -6,7 +6,7 @@ import {
   updateTaskStatusAction,
 } from "@/actions/task-actions";
 import { noteKeys, taskKeys } from "@/lib/query-keys";
-import { Task } from "@/schemas/task";
+import { Task, TaskDetail } from "@/schemas/task";
 import {
   QueryClient,
   useMutation,
@@ -42,6 +42,12 @@ export function useCreateTask() {
         },
       );
 
+      // Creamos un nuevo objeto de tarea detallada con las notas inicializadas como un array vacío
+      const newTask: TaskDetail = {
+        ...data,
+        notes: [], // Inicializamos las notas como un array vacío para mantener la consistencia con el esquema de TaskDetail
+      };
+
       // Tambien actualizamos la tarea en los detalles de la tarea en la cache para mantenerla sincronizada con la lista de tareas
       // Esto es importante para que si el usuario va a los detalles de la tarea recién creada después de crearla,
       // vea los datos actualizados sin tener que esperar a que se vuelva a cargar los detalles desde el servidor
@@ -49,9 +55,9 @@ export function useCreateTask() {
         taskKeys.detail(data.id),
         (oldData: Task | undefined) => {
           // Si no hay datos previos, retornamos la tarea creada como nuevo dato en la cache
-          if (!oldData) return data;
+          if (!oldData) return newTask;
           // Actualizamos la tarea en la cache con los nuevos datos (aunque en este caso no debería haber datos previos)
-          return { ...oldData, ...data };
+          return { ...oldData, ...newTask };
         },
       );
 
@@ -74,7 +80,11 @@ const updateTaskInCache = (queryClient: QueryClient, data: Task) => {
     taskKeys.detail(data.id),
     (oldData: Task | undefined) => {
       // Si no hay datos previos, retornamos la tarea actualizada como nuevo dato en la cache
-      if (!oldData) return data;
+      if (!oldData)
+        return {
+          ...data,
+          notes: [], // Inicializamos las notas como un array vacío para mantener la consistencia con el esquema de TaskDetail
+        };
       // Actualizamos la tarea en la cache con los nuevos datos
       return { ...oldData, ...data };
     },

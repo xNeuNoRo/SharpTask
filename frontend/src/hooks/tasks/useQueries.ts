@@ -1,7 +1,7 @@
 import { getTaskById, getTasks, searchTask } from "@/api/TasksAPI";
 import { taskKeys } from "@/lib/query-keys";
 import { Task } from "@/schemas/task";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 
 /**
  * @description Hook para obtener la lista de tareas. Utiliza React Query para manejar el estado de la consulta.
@@ -21,10 +21,6 @@ export function useTasks() {
  * @returns Un objeto con la información de la consulta, incluyendo los datos de la tarea, el estado de carga y cualquier error.
  */
 export function useTask(id?: Task["id"]) {
-  // Obtenemos el cliente de consultas de React Query para poder acceder a
-  // la cache de consultas y proporcionar datos de placeholder mientras se carga la tarea
-  const queryClient = useQueryClient();
-
   // Aseguramos que el ID sea una cadena válida para evitar errores en la consulta
   const validId = id ?? "";
 
@@ -32,12 +28,6 @@ export function useTask(id?: Task["id"]) {
     queryKey: taskKeys.detail(validId),
     queryFn: () => getTaskById(validId),
     enabled: !!id, // Solo ejecutar la consulta si el ID es válido
-    placeholderData: () => {
-      // Intentamos obtener la tarea de la cache de consultas utilizando la query key de la lista de tareas
-      const lists = queryClient.getQueryData<Task[]>(taskKeys.lists());
-      // Si encontramos la lista de tareas en la cache, intentamos encontrar la tarea específica por su ID
-      return lists?.find((task) => task.id === validId);
-    },
   });
 }
 
