@@ -17,7 +17,7 @@ import DropTask from "./DropTask";
 import ActiveTaskCard from "./ActiveTaskCard";
 import { useAppStore } from "@/stores/useAppStore";
 import { useUpdateTaskStatus } from "@/hooks/tasks/useMutations";
-import { useId } from "react";
+import { useId, useMemo } from "react";
 
 type TaskListProps = {
   tasks: Task[];
@@ -57,11 +57,13 @@ export default function TaskList({ tasks, canEdit }: Readonly<TaskListProps>) {
   const dndId = useId();
 
   // Agrupamos las tareas por su estado, usando reduce para construir un objeto con arrays de tareas por cada estado
-  const groupedTasks = tasks.reduce((acc, task) => {
-    let currentGroup = acc[task.status] ? [...acc[task.status]] : [];
-    currentGroup = [...currentGroup, task];
-    return { ...acc, [task.status]: currentGroup };
-  }, initialStatusGroup);
+  const groupedTasks = useMemo(() => {
+    return tasks.reduce((acc, task) => {
+      let currentGroup = acc[task.status] ? [...acc[task.status]] : [];
+      currentGroup = [...currentGroup, task];
+      return { ...acc, [task.status]: currentGroup };
+    }, initialStatusGroup);
+  }, [tasks]);
 
   // Función que se ejecuta al finalizar un drag, recibe el evento con la información de la tarea arrastrada y el destino
   const handleDragEnd = (e: DragEndEvent) => {
