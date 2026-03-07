@@ -26,5 +26,5 @@ export const UpdateNoteSchema = NoteSchema.pick({
 
 // Inferencia de los tipos TypeScript a partir de los esquemas
 export type Note = z.infer<typeof NoteSchema>;
-export type CreateNote = z.infer<typeof CreateNoteSchema>;
-export type UpdateNote = z.infer<typeof UpdateNoteSchema>;
+export type CreateNoteFormData = z.infer<typeof CreateNoteSchema>;
+export type UpdateNoteFormData = z.infer<typeof UpdateNoteSchema>;

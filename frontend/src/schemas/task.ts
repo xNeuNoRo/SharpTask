@@ -80,6 +80,6 @@ export type TaskDetail = z.infer<typeof TaskDetailSchema>;
 export type TaskChange = z.infer<typeof TaskChangeSchema>;
 
 // Inferencia de los tipos TypeScript para las mutaciones
-export type CreateTask = z.infer<typeof CreateTaskSchema>;
-export type UpdateTask = z.infer<typeof UpdateTaskSchema>;
-export type UpdateTaskStatus = z.infer<typeof UpdateTaskStatusSchema>;
+export type CreateTaskFormData = z.infer<typeof CreateTaskSchema>;
+export type UpdateTaskFormData = z.infer<typeof UpdateTaskSchema>;
+export type UpdateTaskStatusFormData = z.infer<typeof UpdateTaskStatusSchema>;
