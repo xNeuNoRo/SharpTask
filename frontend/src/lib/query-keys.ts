@@ -15,7 +15,8 @@ export const taskKeys = {
 // Query keys para notas
 export const noteKeys = {
   all: ["notes"] as const,
-  lists: (taskId: Task["id"]) => [...noteKeys.all, taskId, "lists"] as const,
+  byTask: (taskId: Task["id"]) => [...noteKeys.all, taskId] as const,
+  lists: (taskId: Task["id"]) => [...noteKeys.byTask(taskId), "lists"] as const,
   detail: (taskId: Task["id"], noteId: Note["id"]) =>
-    [...noteKeys.all, taskId, "detail", noteId] as const,
+    [...noteKeys.byTask(taskId), "detail", noteId] as const,
 };
