@@ -18,8 +18,11 @@ export const CreateNoteSchema = NoteSchema.pick({
   content: true,
 });
 
-// Esquema para actualizar una nota, con los mismos campos que para crear
-export const UpdateNoteSchema = CreateNoteSchema;
+// Esquema para actualizar una nota
+export const UpdateNoteSchema = NoteSchema.pick({
+  id: true,
+  content: true,
+});
 
 // Inferencia de los tipos TypeScript a partir de los esquemas
 export type Note = z.infer<typeof NoteSchema>;

@@ -55,11 +55,17 @@ export const CreateTaskSchema = TaskSchema.pick({
   status: true,
 });
 
-// Esquema para actualizar una tarea, con los mismos campos que para crear
-export const UpdateTaskSchema = CreateTaskSchema;
+// Esquema para actualizar una tarea
+export const UpdateTaskSchema = TaskSchema.pick({
+  id: true,
+  title: true,
+  description: true,
+  status: true,
+});
 
 // Esquema para actualizar solo el estado de una tarea
 export const UpdateTaskStatusSchema = TaskSchema.pick({
+  id: true,
   status: true,
 });
 
