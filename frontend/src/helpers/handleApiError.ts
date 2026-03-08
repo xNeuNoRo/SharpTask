@@ -9,7 +9,7 @@ export function handleApiError(err: unknown): never {
   // lanzamos un error con el mensaje específico proporcionado por la API
   if (isAxiosError(err) && err.response) {
     // Si la API respondió con un error, lanzamos el mensaje de error específico
-    throw new Error(err.response.data.error.message);
+    throw new Error(err.response.data?.error?.message ?? "Error desconocido del servidor");
   }
   // Si el error es otro tipo de error (como un error de red), lo lanzamos para que sea manejado por el componente que llamó a esta función
   throw err;

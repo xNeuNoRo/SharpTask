@@ -65,7 +65,7 @@ export async function updateTaskStatusAction(
 }
 
 /**
- * @description Esta función sse encarga de completar una tarea existente utilizando su ID.
+ * @description Esta función se encarga de completar una tarea existente utilizando su ID.
  * @param taskId - El ID de la tarea que se desea completar.
  * @returns La tarea completada, que puede ser utilizada en la interfaz de usuario para mostrar los cambios realizados o para otras operaciones relacionadas.
  */
