@@ -39,7 +39,7 @@ export default function EditTaskModal() {
             title: task.title,
             description: task.description,
             status: task.status,
-            dueDate: task.dueDate ? task.dueDate.split("T")[0] : null,
+            dueDate: task.dueDate ? task.dueDate.split("T")[0] : "",
           }
         : undefined,
   });
@@ -51,7 +51,7 @@ export default function EditTaskModal() {
         title: task.title,
         description: task.description,
         status: task.status,
-        dueDate: task.dueDate ? task.dueDate.split("T")[0] : null,
+        dueDate: task.dueDate ? task.dueDate.split("T")[0] : "",
       });
     }
   }, [task, taskId, show, reset]);
@@ -59,7 +59,7 @@ export default function EditTaskModal() {
   // Hook para manejar la mutación de actualización de la tarea, que se ejecutará al enviar el formulario
   const { mutate: updateTask, isPending } = useUpdateTask();
 
-  // Función para cerrar el modal, que resetea el formulario y navega a la URL sin los parámetros de edición
+  // Función para cerrar el modal, que navega a la URL sin los parámetros de edición
   const closeModal = () => {
     router.push(createUrl({ action: null, taskId: null }), { scroll: false });
   };
