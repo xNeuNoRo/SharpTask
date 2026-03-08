@@ -9,6 +9,7 @@ import { UpdateTaskSchema, type UpdateTaskFormData } from "@/schemas/task";
 import { useTask } from "@/hooks/tasks/useQueries";
 import { useUpdateTask } from "@/hooks/tasks/useMutations";
 import { useQueryString } from "@/hooks/shared/useQueryString";
+import { useEffect } from "react";
 
 export default function EditTaskModal() {
   // Hook para manejar la navegación y manipulación de URLs con query strings
@@ -22,6 +23,8 @@ export default function EditTaskModal() {
 
   // Obtenemos los datos de la tarea a editar usando un hook personalizado que hace una consulta a la API
   const { data: task, isError } = useTask(taskId ?? "");
+
+  console.log(task?.dueDate);
 
   // Configuramos el formulario usando React Hook Form, con validación basada en el esquema de Zod
   const {
@@ -38,16 +41,28 @@ export default function EditTaskModal() {
             title: task.title,
             description: task.description,
             status: task.status,
+            dueDate: task.dueDate ? task.dueDate.split("T")[0] : null,
           }
         : undefined,
   });
+
+  useEffect(() => {
+    if (show && task && taskId) {
+      reset({
+        id: taskId,
+        title: task.title,
+        description: task.description,
+        status: task.status,
+        dueDate: task.dueDate ? task.dueDate.split("T")[0] : null,
+      });
+    }
+  }, [task, taskId, show, reset]);
 
   // Hook para manejar la mutación de actualización de la tarea, que se ejecutará al enviar el formulario
   const { mutate: updateTask, isPending } = useUpdateTask();
 
   // Función para cerrar el modal, que resetea el formulario y navega a la URL sin los parámetros de edición
   const closeModal = () => {
-    reset();
     router.push(createUrl({ action: null, taskId: null }), { scroll: false });
   };
 

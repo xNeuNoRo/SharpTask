@@ -5,12 +5,13 @@ import { useRouter } from "next/navigation";
 import type { ChangeEvent } from "react";
 import Modal from "@/components/shared/Modal";
 import NotesPanel from "../notes/NotesPanel";
-import { statusTranslations } from "@/locales/es";
+import { statusTranslations, taskTranslations } from "@/locales/es";
 import { formatDate } from "@/helpers/date";
 import { useTask } from "@/hooks/tasks/useQueries";
 import { useUpdateTaskStatus } from "@/hooks/tasks/useMutations";
 import { useQueryString } from "@/hooks/shared/useQueryString";
 import { Task } from "@/schemas/task";
+import classNames from "@/helpers/classNames";
 
 export default function TaskDetailsModal() {
   const router = useRouter();
@@ -45,6 +46,22 @@ export default function TaskDetailsModal() {
     return (
       <Modal title={task.title} open={show} close={closeModal}>
         <div className="flex flex-col my-4 gap-x-4 sm:flex-row sm:items-center sm:justify-start sm:gap-y-0 gap-y-2">
+          {task.dueDate && (
+            <p
+              className={classNames(
+                "flex items-center w-auto px-2 py-1 text-sm font-semibold transition-shadow duration-300 border rounded-full select-none max-w-max hover:shadow-blur",
+                new Date(task.dueDate) < new Date() &&
+                  task.status !== "Completed"
+                  ? "text-red-700 bg-red-100 border-red-200" // Vencida
+                  : "text-blue-700 bg-blue-100 border-blue-200", // A tiempo
+              )}
+            >
+              <span className="shrink-0">
+                <CalendarDaysIcon className="inline w-5 h-5 mr-2" />
+              </span>
+              {taskTranslations.dueDate}: {formatDate(task.dueDate)}
+            </p>
+          )}
           <p className="flex items-center w-auto px-2 py-1 text-sm font-semibold text-purple-700 transition-shadow duration-300 bg-purple-100 border border-purple-200 rounded-full select-none max-w-max hover:shadow-blur">
             <span className="shrink-0">
               <CalendarDaysIcon className="inline w-5 h-5 mr-2" />

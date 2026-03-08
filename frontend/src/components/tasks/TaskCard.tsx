@@ -13,6 +13,7 @@ import {
   EyeIcon,
   PencilIcon,
   TrashIcon,
+  CalendarDaysIcon,
 } from "@heroicons/react/20/solid";
 import { Fragment, useRef } from "react";
 import { useRouter } from "next/navigation";
@@ -20,6 +21,7 @@ import { useDraggable } from "@dnd-kit/core";
 import { Task } from "@/schemas/task";
 import { useCompleteTask, useDeleteTask } from "@/hooks/tasks/useMutations";
 import { useQueryString } from "@/hooks/shared/useQueryString";
+import { formatDate } from "@/helpers/date";
 import classNames from "@/helpers/classNames";
 
 type TaskCardProps = {
@@ -119,6 +121,19 @@ export default function TaskCard({
           {task.title}
         </button>
         <p className="text-slate-500">{task.description}</p>
+        {task.dueDate && (
+          <div
+            className={classNames(
+              "flex items-center text-sm font-semibold max-w-max px-2 py-1 rounded-md",
+              new Date(task.dueDate) < new Date() && task.status !== "Completed"
+                ? "text-red-600 bg-red-50" // Vencida
+                : "text-slate-500 bg-slate-50", // A tiempo o completada
+            )}
+          >
+            <CalendarDaysIcon className="inline w-4 h-4 mr-1.5" />
+            {formatDate(task.dueDate)}
+          </div>
+        )}
       </div>
       <div className="flex shrink-0 gap-x-6">
         <Menu as="div" className="relative flex-none">
