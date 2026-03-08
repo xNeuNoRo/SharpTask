@@ -1,0 +1,277 @@
+[
+  {
+    "Title": "Refactorizaci\u00F3n de la capa de Application",
+    "Description": "Limpiar servicios y DTOs redundantes",
+    "DueDate": "2026-03-12T00:00:00",
+    "Status": 0,
+    "Changes": [
+      {
+        "Status": 0,
+        "ChangedAt": "2026-03-08T05:34:58.591938Z"
+      }
+    ],
+    "Id": "5be66b91-0233-442d-86e5-dc365e894835",
+    "CreatedAt": "2026-03-08T05:34:58.591938Z",
+    "UpdatedAt": "2026-03-08T05:34:58.591938Z"
+  },
+  {
+    "Title": "Configurar entorno de Staging",
+    "Description": "Crear el pipeline de despliegue autom\u00E1tico",
+    "DueDate": "2026-03-10T00:00:00",
+    "Status": 0,
+    "Changes": [
+      {
+        "Status": 0,
+        "ChangedAt": "2026-03-08T05:35:15.0994674Z"
+      }
+    ],
+    "Id": "ce0e1913-67d9-4b82-a549-e14fde0cacd8",
+    "CreatedAt": "2026-03-08T05:35:15.0994674Z",
+    "UpdatedAt": "2026-03-08T05:35:15.0994674Z"
+  },
+  {
+    "Title": "Dise\u00F1ar Mockups del Dashboard",
+    "Description": "Crear prototipos en Figma para la vista de estad\u00EDsticas",
+    "DueDate": "2026-03-09T00:00:00",
+    "Status": 0,
+    "Changes": [
+      {
+        "Status": 0,
+        "ChangedAt": "2026-03-08T05:35:32.8814914Z"
+      }
+    ],
+    "Id": "d036f928-8781-4ccb-901b-7766d62499aa",
+    "CreatedAt": "2026-03-08T05:35:32.8814914Z",
+    "UpdatedAt": "2026-03-08T05:35:39.0748563Z"
+  },
+  {
+    "Title": "Implementaci\u00F3n de Autenticaci\u00F3n",
+    "Description": "Investigar integraci\u00F3n con Auth0 o JWT manual",
+    "DueDate": "2026-03-11T00:00:00",
+    "Status": 0,
+    "Changes": [
+      {
+        "Status": 0,
+        "ChangedAt": "2026-03-08T05:36:10.5542606Z"
+      }
+    ],
+    "Id": "d9f59418-2153-4569-8131-5bd473b35bd6",
+    "CreatedAt": "2026-03-08T05:36:10.5542606Z",
+    "UpdatedAt": "2026-03-08T05:36:10.5542606Z"
+  },
+  {
+    "Title": "Integraci\u00F3n con Pasarela de Pagos",
+    "Description": "Configurar Webhooks de Stripe",
+    "DueDate": null,
+    "Status": 1,
+    "Changes": [
+      {
+        "Status": 2,
+        "ChangedAt": "2026-03-08T05:37:39.4585439Z"
+      },
+      {
+        "Status": 1,
+        "ChangedAt": "2026-03-08T05:37:44.0198936Z"
+      }
+    ],
+    "Id": "25e23dd3-4516-41e4-a3c7-eaa4982bd54d",
+    "CreatedAt": "2026-03-08T05:37:39.4585439Z",
+    "UpdatedAt": "2026-03-08T05:37:44.0198936Z"
+  },
+  {
+    "Title": "Migraci\u00F3n a .NET 9",
+    "Description": "Actualizar los proyectos del backend a la \u00FAltima versi\u00F3n",
+    "DueDate": null,
+    "Status": 1,
+    "Changes": [
+      {
+        "Status": 1,
+        "ChangedAt": "2026-03-08T05:38:07.7855234Z"
+      }
+    ],
+    "Id": "edb973ab-1f14-4bdf-a3da-7927cd6e3acc",
+    "CreatedAt": "2026-03-08T05:38:07.7855234Z",
+    "UpdatedAt": "2026-03-08T05:38:07.7855234Z"
+  },
+  {
+    "Title": "Revisi\u00F3n de Contrato Legal",
+    "Description": "Validar t\u00E9rminos y condiciones con el equipo de abogados",
+    "DueDate": null,
+    "Status": 1,
+    "Changes": [
+      {
+        "Status": 0,
+        "ChangedAt": "2026-03-08T05:38:16.982199Z"
+      },
+      {
+        "Status": 1,
+        "ChangedAt": "2026-03-08T05:38:24.3897469Z"
+      }
+    ],
+    "Id": "b01a1c69-6b86-4a6b-b1c6-2475d7d85cb7",
+    "CreatedAt": "2026-03-08T05:38:16.982199Z",
+    "UpdatedAt": "2026-03-08T05:38:24.3897469Z"
+  },
+  {
+    "Title": "Actualizaci\u00F3n de Servidores",
+    "Description": "Mantenimiento programado por el proveedor de hosting",
+    "DueDate": null,
+    "Status": 1,
+    "Changes": [
+      {
+        "Status": 1,
+        "ChangedAt": "2026-03-08T05:38:56.2826913Z"
+      }
+    ],
+    "Id": "15d805b1-bfdb-4c74-91ff-2fcf447e6cfe",
+    "CreatedAt": "2026-03-08T05:38:56.2826913Z",
+    "UpdatedAt": "2026-03-08T05:38:56.2826913Z"
+  },
+  {
+    "Title": "Desarrollo de Drag \u0026 Drop",
+    "Description": "Implementar la l\u00F3gica de reordenamiento con @dnd-kit",
+    "DueDate": null,
+    "Status": 2,
+    "Changes": [
+      {
+        "Status": 2,
+        "ChangedAt": "2026-03-08T05:39:17.3304545Z"
+      }
+    ],
+    "Id": "7785b623-40ae-47db-8556-4269c2b932b9",
+    "CreatedAt": "2026-03-08T05:39:17.3304545Z",
+    "UpdatedAt": "2026-03-08T05:39:17.3304545Z"
+  },
+  {
+    "Title": "Creaci\u00F3n de Componentes UI",
+    "Description": "Desarrollar botones, inputs y alertas reutilizables",
+    "DueDate": "2026-03-26T00:00:00",
+    "Status": 2,
+    "Changes": [
+      {
+        "Status": 2,
+        "ChangedAt": "2026-03-08T05:40:03.1384503Z"
+      }
+    ],
+    "Id": "1c13e31f-0514-4fc0-8aca-2566714ea606",
+    "CreatedAt": "2026-03-08T05:40:03.1384503Z",
+    "UpdatedAt": "2026-03-08T05:40:03.1384503Z"
+  },
+  {
+    "Title": "Validaci\u00F3n de Formularios",
+    "Description": "Integrar Zod con React Hook Form en el modal de tareas",
+    "DueDate": "2026-03-20T00:00:00",
+    "Status": 2,
+    "Changes": [
+      {
+        "Status": 2,
+        "ChangedAt": "2026-03-08T05:40:23.2033114Z"
+      }
+    ],
+    "Id": "86b06594-bd9b-4662-b286-8d449f95badf",
+    "CreatedAt": "2026-03-08T05:40:23.2033114Z",
+    "UpdatedAt": "2026-03-08T05:40:23.2033114Z"
+  },
+  {
+    "Title": "PR: Seguridad de Identificadores",
+    "Description": "Revisi\u00F3n del validador de UUIDs globales",
+    "DueDate": null,
+    "Status": 3,
+    "Changes": [
+      {
+        "Status": 3,
+        "ChangedAt": "2026-03-08T05:40:44.4391394Z"
+      }
+    ],
+    "Id": "e4616157-20c9-4c15-91b7-5414dead9256",
+    "CreatedAt": "2026-03-08T05:40:44.4391394Z",
+    "UpdatedAt": "2026-03-08T05:40:44.4391394Z"
+  },
+  {
+    "Title": "Unit Tests de Servicios",
+    "Description": "Cobertura de pruebas para la l\u00F3gica de comandos",
+    "DueDate": null,
+    "Status": 3,
+    "Changes": [
+      {
+        "Status": 3,
+        "ChangedAt": "2026-03-08T05:41:04.6155058Z"
+      }
+    ],
+    "Id": "e527f695-3d5d-43d6-82ea-301d19d0e181",
+    "CreatedAt": "2026-03-08T05:41:04.6155058Z",
+    "UpdatedAt": "2026-03-08T05:41:04.6155058Z"
+  },
+  {
+    "Title": "Documentaci\u00F3n t\u00E9cnica",
+    "Description": "Completar el README y comentarios en el c\u00F3digo",
+    "DueDate": "2026-03-18T00:00:00",
+    "Status": 3,
+    "Changes": [
+      {
+        "Status": 0,
+        "ChangedAt": "2026-03-08T05:41:43.3686995Z"
+      },
+      {
+        "Status": 3,
+        "ChangedAt": "2026-03-08T05:41:57.3616987Z"
+      }
+    ],
+    "Id": "9cd91ddb-67d2-4f8a-a7b1-38bba6e7a14a",
+    "CreatedAt": "2026-03-08T05:41:43.3686995Z",
+    "UpdatedAt": "2026-03-08T05:41:57.3616987Z"
+  },
+  {
+    "Title": "Setup Inicial del Proyecto",
+    "Description": "Creaci\u00F3n de la soluci\u00F3n y estructura de carpetas",
+    "DueDate": null,
+    "Status": 4,
+    "Changes": [
+      {
+        "Status": 4,
+        "ChangedAt": "2026-03-08T05:42:25.2784148Z"
+      },
+      {
+        "Status": 2,
+        "ChangedAt": "2026-03-08T05:46:41.0786239Z"
+      },
+      {
+        "Status": 4,
+        "ChangedAt": "2026-03-08T05:47:06.2027737Z"
+      }
+    ],
+    "Id": "8ace9446-a3e4-4f73-bfe9-544cde71641d",
+    "CreatedAt": "2026-03-08T05:42:25.2784148Z",
+    "UpdatedAt": "2026-03-08T05:47:06.2027737Z"
+  },
+  {
+    "Title": "Implementaci\u00F3n del Repositorio JSON",
+    "Description": "Sistema de persistencia at\u00F3mica con bloqueo de archivos",
+    "DueDate": "2026-03-02T00:00:00",
+    "Status": 4,
+    "Changes": [
+      {
+        "Status": 4,
+        "ChangedAt": "2026-03-08T05:42:51.6335657Z"
+      }
+    ],
+    "Id": "5cffe28b-8429-4956-b714-c4debaf4a356",
+    "CreatedAt": "2026-03-08T05:42:51.6335657Z",
+    "UpdatedAt": "2026-03-08T05:43:12.9113687Z"
+  },
+  {
+    "Title": "Dise\u00F1o de Entidades de Dominio",
+    "Description": "Definici\u00F3n de clases base y enums de estado",
+    "DueDate": null,
+    "Status": 4,
+    "Changes": [
+      {
+        "Status": 4,
+        "ChangedAt": "2026-03-08T05:43:29.6195597Z"
+      }
+    ],
+    "Id": "87fbb870-8cfc-49c6-a2ff-77f9597c9cae",
+    "CreatedAt": "2026-03-08T05:43:29.6195597Z",
+    "UpdatedAt": "2026-03-08T05:43:29.6195597Z"
+  }
+]

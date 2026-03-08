@@ -1,0 +1,51 @@
+[
+  {
+    "TaskId": "25e23dd3-4516-41e4-a3c7-eaa4982bd54d",
+    "Content": "Esperando aprobaci\u00F3n de la cuenta de empresa",
+    "Id": "8615bada-edca-4206-80cd-e7b967a2b070",
+    "CreatedAt": "2026-03-08T05:37:51.3616585Z",
+    "UpdatedAt": "2026-03-08T05:37:51.3616585Z"
+  },
+  {
+    "TaskId": "b01a1c69-6b86-4a6b-b1c6-2475d7d85cb7",
+    "Content": "Documento enviado el lunes pasado",
+    "Id": "99dcb152-af8b-46a4-b1a1-ecc421cb0f42",
+    "CreatedAt": "2026-03-08T05:38:28.7415581Z",
+    "UpdatedAt": "2026-03-08T05:38:38.0889591Z"
+  },
+  {
+    "TaskId": "15d805b1-bfdb-4c74-91ff-2fcf447e6cfe",
+    "Content": "Ventana de mantenimiento: Domingo 2 AM",
+    "Id": "b812d3f0-f82c-483c-8318-8fa1038d7ba9",
+    "CreatedAt": "2026-03-08T05:38:59.4184505Z",
+    "UpdatedAt": "2026-03-08T05:38:59.4184505Z"
+  },
+  {
+    "TaskId": "7785b623-40ae-47db-8556-4269c2b932b9",
+    "Content": "Solucionar bug de parpadeo en m\u00F3viles",
+    "Id": "974de7c2-6f67-4899-b993-75a55813f742",
+    "CreatedAt": "2026-03-08T05:39:23.6747903Z",
+    "UpdatedAt": "2026-03-08T05:39:23.6747903Z"
+  },
+  {
+    "TaskId": "e4616157-20c9-4c15-91b7-5414dead9256",
+    "Content": "Comentarios de SonarQube pendientes",
+    "Id": "2d0c958c-7568-437a-bf89-1c068246e04a",
+    "CreatedAt": "2026-03-08T05:40:50.5141784Z",
+    "UpdatedAt": "2026-03-08T05:40:50.5141784Z"
+  },
+  {
+    "TaskId": "e527f695-3d5d-43d6-82ea-301d19d0e181",
+    "Content": "Cobertura actual: 82%",
+    "Id": "d32b85ab-d996-4245-81be-9cbf6b217aa4",
+    "CreatedAt": "2026-03-08T05:41:10.8126262Z",
+    "UpdatedAt": "2026-03-08T05:41:25.6626322Z"
+  },
+  {
+    "TaskId": "8ace9446-a3e4-4f73-bfe9-544cde71641d",
+    "Content": "Uso de Clean Architecture definido",
+    "Id": "0e618737-7189-488e-890b-8c9d4d7c7463",
+    "CreatedAt": "2026-03-08T05:42:33.5787409Z",
+    "UpdatedAt": "2026-03-08T05:42:33.5787409Z"
+  }
+]
