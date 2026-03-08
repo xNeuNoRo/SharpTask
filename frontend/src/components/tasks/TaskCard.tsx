@@ -8,6 +8,7 @@ import {
   Transition,
 } from "@headlessui/react";
 import {
+  CheckCircleIcon,
   EllipsisVerticalIcon,
   EyeIcon,
   PencilIcon,
@@ -17,7 +18,7 @@ import { Fragment, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { useDraggable } from "@dnd-kit/core";
 import { Task } from "@/schemas/task";
-import { useDeleteTask } from "@/hooks/tasks/useMutations";
+import { useCompleteTask, useDeleteTask } from "@/hooks/tasks/useMutations";
 import { useQueryString } from "@/hooks/shared/useQueryString";
 import classNames from "@/helpers/classNames";
 
@@ -47,6 +48,7 @@ export default function TaskCard({
   const { createUrl } = useQueryString();
 
   const { mutate: deleteMutate } = useDeleteTask();
+  const { mutate: completeMutate } = useCompleteTask();
 
   // Funciones para manejar la navegación a la vista o edición de la tarea,
   // al hacer click en el título o en las opciones del menú respectivamente.
@@ -80,8 +82,8 @@ export default function TaskCard({
   };
 
   // Función para asegurar que el z-index del elemento se restablezca después de cerrar el menú de opciones,
-  // esto es necesario porque durante la interacción con el menú se puede cambiar el z-index 
-  // para asegurar que el menú se muestre por encima de otros elementos, 
+  // esto es necesario porque durante la interacción con el menú se puede cambiar el z-index
+  // para asegurar que el menú se muestre por encima de otros elementos,
   // pero al cerrar el menú queremos que la tarjeta vuelva a su estado normal.
   const ensureZIndex = () => {
     const el = taskCardRef.current;
@@ -147,6 +149,19 @@ export default function TaskCard({
                   afterLeave={ensureZIndex}
                 >
                   <MenuItems className="absolute right-0 w-56 py-2 mt-2 origin-top-right bg-white rounded-md shadow-lg ring-1 ring-gray-900/5 focus:outline-none">
+                    {task.status !== "Completed" && (
+                      <MenuItem>
+                        <button
+                          type="button"
+                          onPointerDown={(e) => e.stopPropagation()}
+                          className="flex items-center w-full px-3 py-1 overflow-hidden text-sm font-semibold leading-6 text-left text-green-600 transition-colors rounded-md group hover:cursor-pointer hover:bg-green-500 hover:text-white"
+                          onClick={() => completeMutate(task.id)}
+                        >
+                          <CheckCircleIcon className="inline w-5 h-5 mr-2 text-green-500 transition-colors duration-200 rounded-md group-hover:text-white" />
+                          Completar Tarea
+                        </button>
+                      </MenuItem>
+                    )}
                     <MenuItem>
                       <button
                         type="button"
