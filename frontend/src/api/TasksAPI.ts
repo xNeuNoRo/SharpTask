@@ -23,10 +23,12 @@ const RESOURCE = "/tasks";
  * @description Obtiene la lista de tareas desde la API, valida la respuesta y maneja errores
  * @returns Una promesa que resuelve con un array de tareas validadas o rechaza con un error manejado
  */
-export async function getTasks(): Promise<Task[]> {
+export async function getTasks(status?: Task["status"]): Promise<Task[]> {
   try {
     // Realiza la solicitud GET al recurso de tareas
-    const { data } = await api.get(RESOURCE);
+    const { data } = await api.get(RESOURCE, {
+      params: status ? { status } : undefined,
+    });
     // Valida la respuesta de la API contra el esquema de tareas y devuelve los datos validados
     return validateApiRes(data, TasksSchema);
   } catch (err) {
