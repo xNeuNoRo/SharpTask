@@ -1,6 +1,7 @@
 using FluentValidation;
 using SharpTask.Application.DTOs.Task;
 using SharpTask.Application.Validators.Base;
+using SharpTask.Domain.Interfaces;
 
 namespace SharpTask.Application.Validators.Task;
 
@@ -17,10 +18,11 @@ public class CreateTaskValidator : TaskRequestBaseValidator<CreateTaskRequestDto
     /// asegurando que la fecha de vencimiento no sea una fecha pasada, lo que garantiza
     /// que las tareas creadas tengan una fecha de vencimiento válida y no se asignen fechas que ya hayan pasado.
     /// </summary>
-    public CreateTaskValidator()
+    /// <param name="dateTimeProvider">Proveedor de fecha y hora para validar la fecha de vencimiento</param>
+    public CreateTaskValidator(IDateTimeProvider dateTimeProvider)
     {
         RuleFor(x => x.DueDate)
-            .GreaterThanOrEqualTo(DateTime.UtcNow.Date)
+            .GreaterThanOrEqualTo(dateTimeProvider.UtcNow.Date)
             .When(x => x.DueDate.HasValue)
             .WithMessage("La fecha límite no puede ser una fecha pasada");
     }
