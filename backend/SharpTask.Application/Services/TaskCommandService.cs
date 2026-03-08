@@ -3,6 +3,7 @@ using SharpTask.Application.DTOs.Task;
 using SharpTask.Application.Interfaces.Repositories;
 using SharpTask.Application.Interfaces.Services;
 using SharpTask.Domain.Entities.Tasks;
+using SharpTask.Domain.Enums;
 using SharpTask.Domain.Exceptions;
 using SharpTask.Domain.Interfaces;
 
@@ -154,6 +155,50 @@ public class TaskCommandService : ITaskCommandService
         existingTask.Changes.Add(new TaskChange(existingTask.Status, existingTask.UpdatedAt));
 
         // Guardamos los cambios en el repositorio actualizando la tarea existente
+        var updatedTask = await _taskRepo.UpdateAsync(existingTask);
+
+        // Mapeamos la tarea actualizada a un DTO de respuesta para ser consumido por el frontend y lo devolvemos
+        return updatedTask?.Adapt<TaskResponseDto>();
+    }
+
+    /// <remarks>
+    /// Marca una tarea existente como completada en la base de datos por su ID.
+    /// Verifica si la tarea existe antes de intentar actualizar su estado a completada
+    /// y devuelve null si no se puede actualizar. Si la tarea ya se encuentra en estado completada,
+    /// lanza una excepción de tipo BadRequest. Mapea la tarea actualizada a un DTO de respuesta para
+    /// ser consumido por el frontend y lo devuelve.
+    /// </remarks>
+    /// <param name="id">El ID de la tarea a completar.</param>
+    /// <returns> El DTO de respuesta con los datos de la tarea completada o null si no se pudo completar.</returns>
+    public async Task<TaskResponseDto?> CompleteTaskAsync(Guid id)
+    {
+        // Obtenemos la tarea existente por su ID para verificar si existe
+        // antes de intentar actualizar su estado a completada
+        var existingTask = await _taskRepo.GetByIdAsync(id);
+
+        // Si la tarea no existe, devolvemos null para indicar que no se pudo actualizar
+        if (existingTask == null)
+        {
+            return null;
+        }
+
+        // Si la tarea ya se encuentra en estado completada, lanzamos una excepción de tipo BadRequest
+        if (existingTask.Status == TaskState.Completed)
+        {
+            throw AppException.BadRequest(
+                "La tarea ya se encuentra completada",
+                ErrorCodes.BadRequest
+            );
+        }
+
+        // Actualizamos el estado de la tarea a completada y la fecha de actualización a la hora actual
+        existingTask.Status = TaskState.Completed;
+        existingTask.UpdatedAt = _dateTimeProvider.UtcNow;
+
+        // Agregamos un nuevo registro al historial de cambios de la tarea para registrar el cambio de estado a completada
+        existingTask.Changes.Add(new TaskChange(existingTask.Status, existingTask.UpdatedAt));
+
+        // Guardamos los cambios en el repositorio actualizando la tarea existente y obtenemos la tarea actualizada
         var updatedTask = await _taskRepo.UpdateAsync(existingTask);
 
         // Mapeamos la tarea actualizada a un DTO de respuesta para ser consumido por el frontend y lo devolvemos
