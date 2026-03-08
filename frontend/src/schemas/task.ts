@@ -1,0 +1,103 @@
+import { z } from "zod";
+import { BaseEntitySchema } from ".";
+import { NoteSchema } from "./notes";
+
+// ==============================================
+// Esquemas estructuras relacionadas con tareas y su estado
+// ==============================================
+
+// Esquema para el estado de una tarea
+export const TaskStatusEnum = z.enum(
+  ["Pending", "OnHold", "InProgress", "UnderReview", "Completed"],
+  {
+    error: "Estado de tarea no válido",
+  },
+);
+
+// Esquema para los cambios de estado de una tarea
+export const TaskChangeSchema = z.object({
+  status: TaskStatusEnum,
+  changedAt: z.string().refine((date) => !Number.isNaN(Date.parse(date)), {
+    message: "La fecha de cambio debe ser una fecha válida",
+  }),
+});
+
+// Esquema para una tarea
+export const TaskSchema = BaseEntitySchema.extend({
+  title: z
+    .string()
+    .min(1, "El título es obligatorio")
+    .max(256, "El título no puede tener más de 256 caracteres"),
+  description: z
+    .string()
+    .min(1, "La descripción es obligatoria")
+    .max(1024, "La descripción no puede tener más de 1024 caracteres"),
+  dueDate: z
+    .string()
+    .transform((val) => (val === "" ? null : val)) // Transforma el string vacío del input en null
+    .nullable()
+    .optional()
+    .refine(
+      (date) => {
+        // Si es null o undefined, pasa la validación (porque es opcional)
+        if (!date) return true;
+        // Si hay texto, verificamos que sea una fecha parseable
+        return !Number.isNaN(Date.parse(date));
+      },
+      {
+        message: "La fecha límite debe ser una fecha válida",
+      },
+    ),
+  status: TaskStatusEnum,
+  changes: z.array(TaskChangeSchema).default([]),
+});
+
+// Esquema para un array de tareas
+export const TasksSchema = z.array(TaskSchema);
+
+// Esquema para los detalles de una tarea, incluyendo sus notas
+export const TaskDetailSchema = TaskSchema.extend({
+  notes: z.array(NoteSchema).default([]),
+});
+
+// ==============================================
+// Esquemas para mutacion de tareas
+// ==============================================
+
+// Esquema para crear una tarea, solo con los campos necesarios
+export const CreateTaskSchema = TaskSchema.pick({
+  title: true,
+  description: true,
+  status: true,
+  dueDate: true,
+});
+
+// Esquema para actualizar una tarea
+export const UpdateTaskSchema = TaskSchema.pick({
+  id: true,
+  title: true,
+  description: true,
+  status: true,
+  dueDate: true,
+});
+
+// Esquema para actualizar solo el estado de una tarea
+export const UpdateTaskStatusSchema = TaskSchema.pick({
+  id: true,
+  status: true,
+});
+
+// ==============================================
+// Tipos TypeScript inferidos a partir de los esquemas
+// ==============================================
+
+// Inferencia de los tipos TypeScript a partir de los esquemas estructurales
+export type Task = z.infer<typeof TaskSchema>;
+export type TaskStatus = z.infer<typeof TaskStatusEnum>;
+export type TaskDetail = z.infer<typeof TaskDetailSchema>;
+export type TaskChange = z.infer<typeof TaskChangeSchema>;
+
+// Inferencia de los tipos TypeScript para las mutaciones
+export type CreateTaskFormData = z.infer<typeof CreateTaskSchema>;
+export type UpdateTaskFormData = z.infer<typeof UpdateTaskSchema>;
+export type UpdateTaskStatusFormData = z.infer<typeof UpdateTaskStatusSchema>;

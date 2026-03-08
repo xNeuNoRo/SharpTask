@@ -1,0 +1,109 @@
+"use client";
+
+import { useRouter } from "next/navigation";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import Modal from "@/components/shared/Modal";
+import TaskForm from "./TaskForm";
+import { UpdateTaskSchema, type UpdateTaskFormData } from "@/schemas/task";
+import { useTask } from "@/hooks/tasks/useQueries";
+import { useUpdateTask } from "@/hooks/tasks/useMutations";
+import { useQueryString } from "@/hooks/shared/useQueryString";
+import { useEffect } from "react";
+import LoadingTaskModal from "./LoadingTaskModal";
+
+export default function EditTaskModal() {
+  // Hook para manejar la navegación y manipulación de URLs con query strings
+  const router = useRouter();
+  const { searchParams, createUrl } = useQueryString();
+
+  // Obtenemos los parámetros de la URL para determinar si el modal debe mostrarse y qué tarea se está editando
+  const action = searchParams.get("action");
+  const taskId = searchParams.get("taskId");
+  const show = action === "edit-task" && !!taskId;
+
+  // Obtenemos los datos de la tarea a editar usando un hook personalizado que hace una consulta a la API
+  const { data: task, isError } = useTask(taskId ?? undefined);
+
+  // Configuramos el formulario usando React Hook Form, con validación basada en el esquema de Zod
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors },
+  } = useForm<UpdateTaskFormData>({
+    resolver: zodResolver(UpdateTaskSchema),
+  });
+
+  useEffect(() => {
+    if (show && task && taskId) {
+      reset({
+        id: taskId,
+        title: task.title,
+        description: task.description,
+        status: task.status,
+        dueDate: task.dueDate ? task.dueDate.split("T")[0] : "",
+      });
+    }
+  }, [task, taskId, show, reset]);
+
+  // Hook para manejar la mutación de actualización de la tarea, que se ejecutará al enviar el formulario
+  const { mutate: updateTask, isPending } = useUpdateTask();
+
+  // Función para cerrar el modal, que navega a la URL sin los parámetros de edición
+  const closeModal = () => {
+    router.push(createUrl({ action: null, taskId: null }), { scroll: false });
+  };
+
+  // Utilizamos el hook useEffect para cerrar el modal automáticamente si ocurre
+  // un error al cargar la tarea mientras el modal está abierto.
+  useEffect(() => {
+    if (isError && show) {
+      closeModal();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isError, show]);
+
+  // Función para manejar el envío del formulario, que llama a la mutación de actualización con los datos del formulario,
+  // y en caso de éxito, cierra el modal.
+  const handleUpdateTask = (formData: UpdateTaskFormData) => {
+    updateTask(formData, {
+      onSuccess: () => {
+        closeModal();
+      },
+    });
+  };
+
+  // Si ocurre un error al cargar la tarea, no renderizamos nada 
+  // El efecto se encargará de cerrar el modal automáticamente
+  if (isError) return null;
+
+  if (!task) {
+    return <LoadingTaskModal show={show} closeModal={closeModal} />;
+  }
+
+  return (
+    <Modal open={show} close={closeModal} title="Editar Tarea">
+      <p className="text-xl font-light text-gray-500">
+        Realiza cambios en una{" "}
+        <span className="font-bold text-fuchsia-600">tarea</span>
+      </p>
+      <form
+        className="mt-10 space-y-8"
+        onSubmit={handleSubmit(handleUpdateTask)}
+        noValidate
+      >
+        <input type="hidden" {...register("id")} />
+
+        <TaskForm register={register} errors={errors} />
+
+        <input
+          type="submit"
+          value={isPending ? "Guardando Cambios..." : "Guardar Cambios"}
+          disabled={isPending}
+          className="w-full p-3 font-bold text-white transition-colors shadow-md cursor-pointer bg-fuchsia-600 hover:bg-fuchsia-700 rounded-xl disabled:opacity-50"
+        />
+      </form>
+    </Modal>
+  );
+}
