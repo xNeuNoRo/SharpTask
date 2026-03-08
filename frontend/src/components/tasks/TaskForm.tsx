@@ -10,11 +10,12 @@ import {
   ClipboardDocumentListIcon,
   Bars3BottomLeftIcon,
   GlobeAltIcon,
+  CalendarDaysIcon,
 } from "@heroicons/react/20/solid";
 import ErrorMessage from "@/components/shared/ErrorMessage";
-import { statusTranslations } from "@/locales/es";
+import { statusTranslations, taskTranslations } from "@/locales/es";
 
-// Tipo de props para el formulario de tarea, 
+// Tipo de props para el formulario de tarea,
 // con genéricos para permitir flexibilidad en los tipos de formulario
 type TaskFormProps<T extends FieldValues> = {
   register: UseFormRegister<T>;
@@ -91,6 +92,27 @@ export default function TaskForm<T extends FieldValues>({
         </select>
         {errors.status && (
           <ErrorMessage>{errors.status?.message as string}</ErrorMessage>
+        )}
+      </div>
+
+      <div className="flex flex-col gap-2">
+        <label
+          htmlFor="dueDate"
+          className="flex items-center text-lg font-normal leading-2"
+        >
+          <CalendarDaysIcon className="inline w-6 h-6 mr-2 text-gray-400" />
+          {taskTranslations.dueDate}
+        </label>
+
+        <input
+          id="dueDate"
+          type="date"
+          className="w-full p-3 transition-colors border border-gray-300 rounded-md bg-gray-50 hover:bg-white focus:border-fuchsia-500 focus:ring-2 focus:ring-fuchsia-200"
+          {...register("dueDate" as Path<T>)}
+        />
+
+        {errors.dueDate && (
+          <ErrorMessage>{errors.dueDate?.message as string}</ErrorMessage>
         )}
       </div>
     </>

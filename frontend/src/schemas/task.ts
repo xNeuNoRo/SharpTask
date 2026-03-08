@@ -32,6 +32,22 @@ export const TaskSchema = BaseEntitySchema.extend({
     .string()
     .min(1, "La descripción es obligatoria")
     .max(1024, "La descripción no puede tener más de 1024 caracteres"),
+  dueDate: z
+    .string()
+    .transform((val) => (val === "" ? null : val)) // Transforma el string vacío del input en null
+    .nullable()
+    .optional()
+    .refine(
+      (date) => {
+        // Si es null o undefined, pasa la validación (porque es opcional)
+        if (!date) return true;
+        // Si hay texto, verificamos que sea una fecha parseable
+        return !Number.isNaN(Date.parse(date));
+      },
+      {
+        message: "La fecha límite debe ser una fecha válida",
+      },
+    ),
   status: TaskStatusEnum,
   changes: z.array(TaskChangeSchema).default([]),
 });
@@ -53,6 +69,7 @@ export const CreateTaskSchema = TaskSchema.pick({
   title: true,
   description: true,
   status: true,
+  dueDate: true,
 });
 
 // Esquema para actualizar una tarea
@@ -61,6 +78,7 @@ export const UpdateTaskSchema = TaskSchema.pick({
   title: true,
   description: true,
   status: true,
+  dueDate: true,
 });
 
 // Esquema para actualizar solo el estado de una tarea

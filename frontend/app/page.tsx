@@ -11,7 +11,7 @@ export default async function Home() {
   // Prefetch de la lista de tareas para mejorar la experiencia del usuario al cargar el dashboard
   await queryClient.prefetchQuery({
     queryKey: taskKeys.lists(),
-    queryFn: getTasks,
+    queryFn: () => getTasks(),
   });
 
   return (
