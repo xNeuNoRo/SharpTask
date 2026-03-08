@@ -28,19 +28,20 @@ export function useCreateTask() {
       // Mostramos un mensaje de éxito al usuario despues de crear la tarea
       toast.success("Tarea creada exitosamente");
 
+      // Función auxiliar para actualizar la cache de consultas con la nueva tarea creada
+      const updater = (oldData: Task[] | undefined) => {
+        // Si no hay datos previos, retornamos un nuevo array con la tarea creada
+        if (!oldData) return [data];
+        // Si la tarea ya existe en la cache (lo cual no debería pasar pero por si acaso), no la agregamos de nuevo
+        if (oldData.some((task) => task.id === data.id)) return oldData;
+        // Agregamos la nueva tarea al inicio de la lista de tareas en la cache
+        return [data, ...oldData];
+      };
+
       // Hacemos un Pessimistic Update antes de invalidar la cache para que la nueva tarea aparezca inmediatamente
-      //  en la lista de tareas sin tener que esperar a que se vuelva a cargar la lista desde el servidor
-      queryClient.setQueryData(
-        taskKeys.lists(),
-        (oldData: Task[] | undefined) => {
-          // Si no hay datos previos, retornamos un nuevo array con la tarea creada
-          if (!oldData) return [data];
-          // Si la tarea ya existe en la cache (lo cual no debería pasar pero por si acaso), no la agregamos de nuevo
-          if (oldData.some((task) => task.id === data.id)) return oldData;
-          // Agregamos la nueva tarea al inicio de la lista de tareas en la cache
-          return [data, ...oldData];
-        },
-      );
+      // en la lista de tareas (filtrada o no) sin tener que esperar a que se vuelva a cargar la lista desde el servidor
+      queryClient.setQueryData(taskKeys.lists(), updater);
+      queryClient.setQueryData(taskKeys.lists(data.status), updater);
 
       // Creamos un nuevo objeto de tarea detallada con las notas inicializadas como un array vacío
       const newTask: TaskDetail = {
@@ -90,16 +91,45 @@ const updateTaskInCache = (queryClient: QueryClient, data: Task) => {
     },
   );
 
-  // Tambien actualizamos la tarea en la lista de tareas en la cache para mantenerla sincronizada con los detalles de la tarea
-  // Esto es importante para que si el usuario vuelve a la lista de tareas después de actualizar una tarea,
-  // vea los datos actualizados sin tener que esperar a que se vuelva a cargar la lista desde el servidor
-  queryClient.setQueryData(taskKeys.lists(), (oldData: Task[] | undefined) => {
-    // Si no hay datos previos, retornamos solamente un arr con la tarea actualizada
-    if (!oldData) return [data];
-    // Actualizamos la tarea en la lista de tareas en la cache con los nuevos datos
-    return oldData.map((task) =>
-      task.id === data.id ? { ...task, ...data } : task,
-    );
+  // Obtenemos todas las queries de la cache que correspondan a las listas de tareas
+  // (filtradas o no) para actualizar la tarea en esas listas si es que existe
+  const listsQueries = queryClient.getQueriesData<Task[]>({
+    queryKey: taskKeys.listsBase(),
+  });
+
+  // Iteramos sobre cada query de las listas de tareas para actualizar la tarea en la cache de cada una de esas queries
+  listsQueries.forEach(([queryKey, oldData]) => {
+    // Si no hay datos previos, no hacemos nada.
+    if (!oldData) return;
+
+    // Obtenemos el filtro de estado de la query key para saber si la tarea actualizada debería estar en esa lista o no
+    const statusFilter = queryKey[2] as Task["status"] | undefined;
+
+    // Establecemos la cache
+    queryClient.setQueryData(queryKey, () => {
+      // Si la tarea existe en la cache pero ya no debería estar
+      // (ej. cambió de estado y ya no coincide con el filtro), la eliminamos
+      if (statusFilter && data.status !== statusFilter) {
+        return oldData.filter((task) => task.id !== data.id);
+      }
+
+      // Si la tarea existe en la cache y debería estar, la actualizamos con los nuevos datos
+      const taskExists = oldData.some((task) => task.id === data.id);
+
+      // si existe y debería estar, la actualizamos con los nuevos datos
+      if (taskExists) {
+        return oldData.map((task) =>
+          task.id === data.id ? { ...task, ...data } : task,
+        );
+      }
+      // Si no existe pero debería estar (ej. cambió de estado y ahora coincide con el filtro), la agregamos
+      else if (!statusFilter || data.status === statusFilter) {
+        return [data, ...oldData];
+      }
+
+      // Si no existe y no debería estar, o si existe y no debería estar, retornamos los datos previos sin cambios
+      return oldData;
+    });
   });
 
   // Invalidamos la cache de la todas las query keys de tareas para que se vuelvan a cargar
@@ -195,25 +225,25 @@ export function useDeleteTask() {
 
       // Guardamos una copia de los datos previos de la lista de tareas
       // para poder revertir la cache en caso de que la eliminación falle
-      const previousTasks = queryClient.getQueryData<Task[]>(taskKeys.lists());
+      const previousLists = queryClient.getQueriesData<Task[]>({
+        queryKey: taskKeys.listsBase(),
+      });
 
       // Hacemos un Optimistic Update antes de eliminar la tarea para que desaparezca inmediatamente
       // de la lista de tareas sin tener que esperar a que se vuelva a cargar la lista desde el servidor
       // En caso de que no se haya eliminado realmente del servidor, al invalidar las queries luego
       // se volverá a cargar nuevamente en la cache y aparecerá de nuevo en la lista de tareas
-      queryClient.setQueryData(
-        taskKeys.lists(),
+      queryClient.setQueriesData(
+        { queryKey: taskKeys.listsBase() },
         (oldData: Task[] | undefined) => {
-          // Si no hay datos previos, retornamos un arr vacío
           if (!oldData) return [];
-          // Eliminamos la tarea de la lista de tareas en la cache filtrando por su ID
           return oldData.filter((task) => task.id !== taskId);
         },
       );
 
       // Devolvemos los datos previos de la lista de tareas para que puedan ser utilizados
       // en caso de que la eliminación falle y necesitemos revertir la cache
-      return { previousTasks };
+      return { previousLists };
     },
     onSuccess: () => {
       // Mostramos un mensaje de éxito al usuario después de eliminar la tarea
@@ -233,8 +263,10 @@ export function useDeleteTask() {
       toast.error(error.message);
 
       // Revertimos la cache de la lista de tareas a los datos previos guardados en el contexto en caso de que la eliminación falle
-      if (context?.previousTasks) {
-        queryClient.setQueryData(taskKeys.lists(), context.previousTasks);
+      if (context?.previousLists) {
+        context.previousLists.forEach(([queryKey, oldData]) => {
+          queryClient.setQueryData(queryKey, oldData);
+        });
       }
     },
   });
