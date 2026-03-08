@@ -18,27 +18,31 @@ export default function DashboardView() {
   const router = useRouter();
   const { createUrl, searchParams } = useQueryString();
 
-  const { keyword, setKeyword, clear } = useUrlSearch({
+  // Hook personalizado para manejar un valor de búsqueda sincronizado con la URL
+  const { keyword, setKeyword } = useUrlSearch({
     paramName: "search",
     delay: 500,
   });
 
+  // Obtenemos el estado de filtro desde la URL (puede ser "pending", "in-progress", "completed" o undefined)
   const statusFromUrl =
     (searchParams.get("status") as Task["status"]) || undefined;
   const searchFromUrl = searchParams.get("search") || "";
 
+  // Consultas para obtener tareas por estado y por búsqueda,
+  // utilizando React Query para manejar el estado de carga y errores
   const {
     data: tasksByStatus,
     isLoading: isLoadingTasks,
     isError: isErrorTasks,
   } = useTasks(statusFromUrl || undefined);
-
   const {
     data: searchResults,
     isLoading: isLoadingSearch,
     isError: isErrorSearch,
   } = useSearchTasks(searchFromUrl);
 
+  // Determinamos qué tareas mostrar, si estamos buscando o no, y el estado de carga/error correspondiente
   const isSearching = searchFromUrl.trim() !== "";
   const displayedTasks = isSearching
     ? searchResults?.filter(
@@ -48,16 +52,15 @@ export default function DashboardView() {
   const isLoading = isSearching ? isLoadingSearch : isLoadingTasks;
   const isError = isSearching ? isErrorSearch : isErrorTasks;
 
+  // Función para manejar el cambio de estado desde el select, actualizando la URL y limpiando la búsqueda
   const handleStatusChange = useCallback(
     (val: string) => {
       const url = createUrl({
         status: val || null,
-        search: null,
       });
-      clear();
       router.replace(url, { scroll: false });
     },
-    [createUrl, router, clear],
+    [createUrl, router],
   );
 
   // Si hay un error al cargar las tareas, mostramos un mensaje de error
