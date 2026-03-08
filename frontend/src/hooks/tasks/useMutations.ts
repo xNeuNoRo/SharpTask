@@ -7,6 +7,7 @@ import {
 } from "@/actions/task-actions";
 import { noteKeys, taskKeys } from "@/lib/query-keys";
 import { Task, TaskDetail } from "@/schemas/task";
+import { useAppStore } from "@/stores/useAppStore";
 import {
   QueryClient,
   useMutation,
@@ -167,6 +168,8 @@ export function useUpdateTask() {
 export function useUpdateTaskStatus() {
   // Obtenemos el cliente de consultas de React Query para poder manipular la cache de consultas
   const queryClient = useQueryClient();
+  // Obtenemos la función para deshabilitar las animaciones de la aplicación desde el store global
+  const setDisableAnimation = useAppStore((state) => state.setDisableAnimation);
 
   return useMutation({
     mutationFn: updateTaskStatusAction,
@@ -176,6 +179,12 @@ export function useUpdateTaskStatus() {
 
       // Actualizamos la tarea en la cache de consultas para que aparezca inmediatamente
       updateTaskInCache(queryClient, data);
+    },
+    onSettled: () => {
+      // Habilitamos las animaciones nuevamente después de que la mutación se haya completado (ya sea con éxito o con error)
+      setDisableAnimation(false);
+      // Invalidamos la cache de la todas las query keys de tareas para que se vuelvan a cargar
+      queryClient.invalidateQueries({ queryKey: taskKeys.all });
     },
     onError: (error) => {
       // Mostramos el mensaje de error al usuario si la actualización del estado de la tarea falla
