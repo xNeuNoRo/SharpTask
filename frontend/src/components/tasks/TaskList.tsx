@@ -29,15 +29,6 @@ type GroupedTasks = {
   [key: string]: Task[];
 };
 
-// Estado inicial para las tareas agrupadas, asi siempre tenemos las claves aunque no haya tareas
-const initialStatusGroup: GroupedTasks = {
-  Pending: [],
-  OnHold: [],
-  InProgress: [],
-  UnderReview: [],
-  Completed: [],
-};
-
 // Estilos para los bordes de cada estado, asi lo tenemos centralizado y fácil de modificar
 const statusStyles: { [key: string]: string } = {
   Pending: "border-t-slate-500",
@@ -58,11 +49,24 @@ export default function TaskList({ tasks, canEdit }: Readonly<TaskListProps>) {
 
   // Agrupamos las tareas por su estado, usando reduce para construir un objeto con arrays de tareas por cada estado
   const groupedTasks = useMemo(() => {
-    return tasks.reduce((acc, task) => {
-      let currentGroup = acc[task.status] ? [...acc[task.status]] : [];
-      currentGroup = [...currentGroup, task];
-      return { ...acc, [task.status]: currentGroup };
-    }, initialStatusGroup);
+    // Creamos un objeto inicial con las claves de cada estado y arrays vacíos
+    const groups: GroupedTasks = {
+      Pending: [],
+      OnHold: [],
+      InProgress: [],
+      UnderReview: [],
+      Completed: [],
+    };
+
+    // Iteramos sobre las tareas y las agregamos al array correspondiente según su estado
+    tasks.forEach((task) => {
+      if (groups[task.status]) {
+        groups[task.status].push(task);
+      }
+    });
+
+    // Devolvemos el objeto con las tareas agrupadas por estado
+    return groups;
   }, [tasks]);
 
   // Función que se ejecuta al finalizar un drag, recibe el evento con la información de la tarea arrastrada y el destino
