@@ -22,7 +22,7 @@ export default function TaskDetailsModal() {
   const taskId = searchParams.get("taskId");
   const show = action === "view-task" && !!taskId;
 
-  const { data: task, isError } = useTask(taskId ?? "");
+  const { data: task, isError } = useTask(taskId ?? undefined);
   const { mutate: updateTaskStatus } = useUpdateTaskStatus();
 
   const closeModal = () => {
