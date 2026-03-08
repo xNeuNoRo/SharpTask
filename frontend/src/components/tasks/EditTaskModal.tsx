@@ -24,8 +24,6 @@ export default function EditTaskModal() {
   // Obtenemos los datos de la tarea a editar usando un hook personalizado que hace una consulta a la API
   const { data: task, isError } = useTask(taskId ?? "");
 
-  console.log(task?.dueDate);
-
   // Configuramos el formulario usando React Hook Form, con validación basada en el esquema de Zod
   const {
     register,
