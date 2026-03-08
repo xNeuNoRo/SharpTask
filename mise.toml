@@ -23,7 +23,7 @@ sources = ["frontend/package.json", "frontend/bun.lockb"]
 [tasks.backend]
 depends = ["install_backend"]
 dir = "backend"
-run = "dotnet watch run --project Expenses.API" # 'dotnet watch' para tener hot-reload al ejecutar el proyecto
+run = "dotnet watch run --project SharpTask.API" # 'dotnet watch' para tener hot-reload al ejecutar el proyecto
 
 # Setup del frontend (instalando dependencias, etc)
 [tasks.frontend]
