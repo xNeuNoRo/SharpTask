@@ -27,6 +27,10 @@ public class TaskRequestBaseValidator<T> : AbstractValidator<T>
             .MaximumLength(1024)
             .WithMessage("La descripción no puede exceder los 1024 caracteres.");
 
+        RuleFor(x => x.DueDate)
+            .GreaterThanOrEqualTo(DateTime.Today)
+            .WithMessage("La fecha límite no puede ser una fecha pasada");
+
         RuleFor(x => x.Status)
             .IsInEnum()
             .WithMessage("El estado de la tarea no es válido.")

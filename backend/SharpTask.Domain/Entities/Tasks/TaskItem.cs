@@ -25,6 +25,13 @@ public class TaskItem : BaseEntity
     public string? Description { get; set; }
 
     /// <summary>
+    /// Fecha de vencimiento de la tarea, es un campo requerido
+    /// que indica la fecha límite para completar la tarea,
+    /// </summary>
+    /// <example>2026-06-30T23:59:00Z</example>
+    public DateTime? DueDate { get; set; }
+
+    /// <summary>
     /// Estado actual de la tarea, representado por el enum TaskState,
     /// que puede ser Pending, InProgress, OnHold, UnderReview o Completed.
     /// </summary>
@@ -54,14 +61,22 @@ public class TaskItem : BaseEntity
     /// </summary>
     /// <param name="title">El título de la tarea.</param>
     /// <param name="description">La descripción de la tarea.</param>
+    /// <param name="dueDate">La fecha de vencimiento de la tarea.</param>
     /// <param name="status">El estado inicial de la tarea.</param>
     /// <param name="now">La fecha y hora de creación.</param>
     [SetsRequiredMembers]
-    public TaskItem(string title, string? description, TaskState? status, DateTime now)
+    public TaskItem(
+        string title,
+        string? description,
+        DateTime? dueDate,
+        TaskState? status,
+        DateTime now
+    )
     {
         Id = Guid.NewGuid();
         Title = title;
         Description = description;
+        DueDate = dueDate;
         Status = status ?? TaskState.Pending;
         CreatedAt = now;
         UpdatedAt = now;

@@ -9,8 +9,8 @@ using SharpTask.Domain.Interfaces;
 namespace SharpTask.Application.Services;
 
 /// <summary>
-/// Servicio de comandos para las tareas, encargado de manejar 
-/// la lógica de negocio relacionada con la creación, actualización 
+/// Servicio de comandos para las tareas, encargado de manejar
+/// la lógica de negocio relacionada con la creación, actualización
 /// y eliminación de tareas, así como la gestión de su estado y el historial de cambios.
 /// </summary>
 public class TaskCommandService : ITaskCommandService
@@ -50,7 +50,13 @@ public class TaskCommandService : ITaskCommandService
         // Obtenemos la hora actual para establecer las fechas de creación y actualización
         var currentTime = _dateTimeProvider.UtcNow;
         // Creamos una nueva instancia de TaskItem utilizando los datos del DTO de solicitud y la hora actual
-        var newTask = new TaskItem(request.Title, request.Description, request.Status, currentTime);
+        var newTask = new TaskItem(
+            request.Title,
+            request.Description,
+            request.DueDate,
+            request.Status,
+            currentTime
+        );
         // Agregamos la nueva tarea al repositorio y obtenemos la tarea creada con su ID generado
         var createdTask = await _taskRepo.AddAsync(newTask);
         // Mapeamos la tarea creada a un DTO de respuesta para ser consumido por el frontend y lo devolvemos
