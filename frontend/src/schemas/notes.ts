@@ -3,7 +3,7 @@ import { BaseEntitySchema } from ".";
 
 // Esquema para una nota
 export const NoteSchema = BaseEntitySchema.extend({
-  taskId: z.uuidv4("El ID de tarea debe ser un UUID válido"),
+  taskId: z.uuid("El ID de tarea debe ser un UUID válido"),
   content: z
     .string()
     .min(1, "El contenido es obligatorio")
