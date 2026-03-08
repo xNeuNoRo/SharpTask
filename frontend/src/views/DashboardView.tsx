@@ -19,7 +19,7 @@ export default function DashboardView() {
   const { createUrl, searchParams } = useQueryString();
 
   // Hook personalizado para manejar un valor de búsqueda sincronizado con la URL
-  const { keyword, setKeyword } = useUrlSearch({
+  const { keyword, setKeyword, clear } = useUrlSearch({
     paramName: "search",
     delay: 500,
   });
@@ -104,7 +104,7 @@ export default function DashboardView() {
           />
           {keyword && (
             <button
-              onClick={() => setKeyword("")}
+              onClick={clear}
               className="absolute right-3 top-3 text-gray-400 hover:text-gray-600 hover:cursor-pointer hover:bg-gray-200 rounded-full transition-colors px-2"
             >
               ✕
