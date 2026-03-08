@@ -17,7 +17,7 @@ export async function createNoteAction(
   // Llamamos a la función de la API para crear la nota con los datos proporcionados
   const note = await createNote(taskId, noteData);
   // Después de crear la nota, revalidamos la ruta para actualizar la lista de notas en la interfaz de usuario
-  revalidatePath(`/tasks/${taskId}`, "layout");
+  revalidatePath("/");
   // Devolvemos la nota creada para que pueda ser utilizada en la interfaz de usuario si es necesario
   return note;
 }
@@ -35,7 +35,7 @@ export async function updateNoteAction(
   // Llamamos a la función de la API para actualizar la nota con los datos proporcionados
   const updatedNote = await updateNote(taskId, noteData);
   // Después de actualizar la nota, revalidamos la ruta para actualizar la interfaz de usuario
-  revalidatePath(`/tasks/${taskId}`, "layout");
+  revalidatePath("/");
   // Devolvemos la nota actualizada para que pueda ser utilizada en la interfaz de usuario si es necesario
   return updatedNote;
 }
@@ -52,5 +52,5 @@ export async function deleteNoteAction(
   // Llamamos a la función de la API para eliminar la nota con el ID proporcionado
   await deleteNote(taskId, noteId);
   // Después de eliminar la nota, revalidamos la ruta para actualizar la interfaz de usuario
-  revalidatePath(`/tasks/${taskId}`, "layout");
+  revalidatePath("/");
 }

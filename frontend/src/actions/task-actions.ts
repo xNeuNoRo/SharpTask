@@ -27,7 +27,7 @@ export async function createTaskAction(
   // Llamamos a la función de la API para crear la tarea con los datos proporcionados
   const task = await createTask(taskData);
   // Después de crear la tarea, revalidamos la ruta para actualizar la lista de tareas en la interfaz de usuario
-  revalidatePath("/", "layout");
+  revalidatePath("/");
   // Devolvemos la tarea creada para que pueda ser utilizada en la interfaz de usuario si es necesario
   return task;
 }
@@ -43,7 +43,7 @@ export async function updateTaskAction(
   // Llamamos a la función de la API para actualizar la tarea con el ID y los datos de actualización proporcionados
   const updatedTask = await updateTask(taskData);
   // Después de actualizar la tarea, revalidamos la ruta para actualizar la interfaz de usuario
-  revalidatePath("/", "layout");
+  revalidatePath("/");
   // Devolvemos la tarea actualizada para que pueda ser utilizada en la interfaz de usuario si es necesario
   return updatedTask;
 }
@@ -59,7 +59,7 @@ export async function updateTaskStatusAction(
   // Llamamos a la función de la API para actualizar el estado de la tarea con el ID y los datos de actualización proporcionados
   const updatedTask = await updateTaskStatus(taskData);
   // Después de actualizar el estado de la tarea, revalidamos la ruta para actualizar la interfaz de usuario
-  revalidatePath("/", "layout");
+  revalidatePath("/");
   // Devolvemos la tarea actualizada para que pueda ser utilizada en la interfaz de usuario si es necesario
   return updatedTask;
 }
@@ -73,7 +73,7 @@ export async function completeTaskAction(taskId: Task["id"]): Promise<Task> {
   // Llamamos a la función de la API para actualizar el estado de la tarea a completada utilizando el ID de la tarea
   const updatedTask = await completeTask(taskId);
   // Después de completar la tarea, revalidamos la ruta para actualizar la interfaz de usuario
-  revalidatePath("/", "layout");
+  revalidatePath("/");
   // Devolvemos la tarea actualizada para que pueda ser utilizada en la interfaz de usuario si es necesario
   return updatedTask;
 }
@@ -86,5 +86,5 @@ export async function deleteTaskAction(taskId: Task["id"]): Promise<void> {
   // Llamamos a la función de la API para eliminar la tarea con el ID proporcionado
   await deleteTask(taskId);
   // Después de eliminar la tarea, revalidamos la ruta para actualizar la interfaz de usuario
-  revalidatePath("/", "layout");
+  revalidatePath("/");
 }
