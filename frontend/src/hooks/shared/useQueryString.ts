@@ -35,7 +35,8 @@ export const useQueryString = () => {
       });
 
       // Retornamos la URL completa que incluye el pathname y la query string actualizada
-      return `${pathname}?${params.toString()}`;
+      const queryString = params.toString();
+      return queryString ? `${pathname}?${queryString}` : pathname;
     },
     [searchParams, pathname],
   );
