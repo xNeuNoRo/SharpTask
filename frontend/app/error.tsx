@@ -11,7 +11,7 @@ export default function ErrorPage({
   reset: () => void;
 }>) {
   useEffect(() => {
-    // Aquí podrías enviar el error a Sentry, Datadog, etc.
+    // Si esto fuera escalar aqui se agregarian herramientas de monitoreo o logging.
     console.error("Error fatal interceptado por Next.js:", error);
   }, [error]);
 
