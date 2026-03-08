@@ -2,9 +2,10 @@
 
 import { useForm } from "react-hook-form";
 import ErrorMessage from "@/components/shared/ErrorMessage";
-import { CreateNoteFormData } from "@/schemas/notes";
+import { CreateNoteFormData, CreateNoteSchema } from "@/schemas/notes";
 import { Task } from "@/schemas/task";
 import { useCreateNote } from "@/hooks/notes/useMutations";
+import { zodResolver } from "@hookform/resolvers/zod";
 
 type AddNoteFormProps = {
   taskId: Task["id"];
@@ -22,7 +23,10 @@ export default function AddNoteForm({ taskId }: Readonly<AddNoteFormProps>) {
     handleSubmit,
     reset,
     formState: { errors },
-  } = useForm<CreateNoteFormData>({ defaultValues: initialValues });
+  } = useForm<CreateNoteFormData>({
+    resolver: zodResolver(CreateNoteSchema),
+    defaultValues: initialValues,
+  });
 
   // Hook para manejar la mutación de creación de nota, que se ejecutará al enviar el formulario
   const { mutate: createNote, isPending } = useCreateNote(taskId);
@@ -54,7 +58,7 @@ export default function AddNoteForm({ taskId }: Readonly<AddNoteFormProps>) {
           id="content"
           placeholder="Contenido de la nota"
           className="w-full p-3 border border-gray-300 rounded-md"
-          {...register("content", { required: "El contenido es obligatorio" })}
+          {...register("content")}
         />
 
         {errors.content && (
