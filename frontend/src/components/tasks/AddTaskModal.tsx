@@ -63,8 +63,6 @@ export default function AddTaskModal() {
         onSubmit={handleSubmit(handleCreateTask)}
         noValidate
       >
-        <input type="hidden" {...register("status")} value="Pending" />
-
         <TaskForm register={register} errors={errors} />
 
         <input
