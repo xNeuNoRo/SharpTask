@@ -20,7 +20,7 @@ public class CreateTaskValidator : TaskRequestBaseValidator<CreateTaskRequestDto
     public CreateTaskValidator()
     {
         RuleFor(x => x.DueDate)
-            .GreaterThanOrEqualTo(DateTime.Today)
+            .GreaterThanOrEqualTo(DateTime.UtcNow.Date)
             .WithMessage("La fecha límite no puede ser una fecha pasada");
     }
 }
