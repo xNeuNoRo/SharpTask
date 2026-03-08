@@ -7,7 +7,8 @@ import { Task } from "@/schemas/task";
 // Query keys para tareas
 export const taskKeys = {
   all: ["tasks"] as const,
-  lists: () => [...taskKeys.all, "lists"] as const,
+  lists: (status?: Task["status"]) =>
+    [...taskKeys.all, "lists", status] as const,
   detail: (id: Task["id"]) => [...taskKeys.all, "detail", id] as const,
   search: (query: string) => [...taskKeys.all, "search", query] as const,
 };

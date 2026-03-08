@@ -7,10 +7,10 @@ import { useQuery } from "@tanstack/react-query";
  * @description Hook para obtener la lista de tareas. Utiliza React Query para manejar el estado de la consulta.
  * @returns Un objeto con la información de la consulta, incluyendo los datos, el estado de carga y cualquier error.
  */
-export function useTasks() {
+export function useTasks(status?: Task["status"]) {
   return useQuery({
-    queryKey: taskKeys.lists(),
-    queryFn: getTasks,
+    queryKey: taskKeys.lists(status),
+    queryFn: () => getTasks(status),
     staleTime: 1000 * 60 * 5, // 5 minutos
   });
 }
