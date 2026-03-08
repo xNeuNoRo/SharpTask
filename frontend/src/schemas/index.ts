@@ -37,9 +37,12 @@ export const ApiResponseStrictSchema = <T extends z.ZodType>(dataSchema: T) =>
     }),
   ]) as z.ZodType<ApiResponseStrictFromSchema<T>>;
 
+// Esquema para validar UUIDs, con un mensaje de error personalizado
+export const UUIDSchema = z.uuid("Formato de identificador inválido").trim();
+
 // Esquema base para entidades con ID y timestamps
 export const BaseEntitySchema = z.object({
-  id: z.uuidv4("El ID debe ser un UUID válido"),
+  id: UUIDSchema,
   createdAt: z.string().refine((date) => !Number.isNaN(Date.parse(date)), {
     message: "La fecha de creación debe ser una fecha válida",
   }),
@@ -47,3 +50,19 @@ export const BaseEntitySchema = z.object({
     message: "La fecha de última actualización debe ser una fecha válida",
   }),
 });
+
+/**
+ * @description Valida un ID utilizando el esquema UUIDSchema.
+ * Si el ID no es válido, lanza un error genérico de seguridad para evitar revelar información sobre la validación.
+ * @param id El ID a validar, que puede ser una cadena, un número o undefined. Se convertirá a cadena antes de la validación.
+ * @returns El ID validado como cadena si es válido.
+ * @throws Error genérico de seguridad si el ID no es válido, sin revelar detalles específicos sobre la validación.
+ */
+export const validateId = (id: string | number | undefined): string => {
+  const result = UUIDSchema.safeParse(String(id));
+  if (!result.success) {
+    // Lanzar un error genérico de seguridad
+    throw new Error("Alerta de seguridad: Formato de identificador inválido");
+  }
+  return result.data;
+};

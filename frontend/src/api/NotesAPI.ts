@@ -1,6 +1,7 @@
 import { handleApiError } from "@/helpers/handleApiError";
 import { validateApiRes } from "@/helpers/validateApiRes";
 import { api } from "@/lib/axios";
+import { validateId } from "@/schemas";
 import {
   CreateNoteFormData,
   Note,
@@ -25,8 +26,10 @@ export async function getNotesByTaskId(
   taskId: Note["taskId"],
 ): Promise<Note[]> {
   try {
+    // Validamos el ID de la tarea antes de realizar la solicitud para evitar problemas de seguridad
+    const safeTaskId = validateId(taskId);
     // Realiza la solicitud GET al recurso de notas para la tarea específica
-    const { data } = await api.get(RESOURCE(taskId));
+    const { data } = await api.get(RESOURCE(safeTaskId));
     // Valida la respuesta de la API contra el esquema de notas y devuelve los datos validados
     return validateApiRes(data, NotesSchema);
   } catch (err) {
@@ -46,8 +49,11 @@ export async function getNoteById(
   noteId: Note["id"],
 ): Promise<Note> {
   try {
+    // Validamos el ID de la tarea y el ID de la nota antes de realizar la solicitud para evitar problemas de seguridad
+    const safeTaskId = validateId(taskId);
+    const safeNoteId = validateId(noteId);
     // Realiza la solicitud GET al recurso de notas para la tarea específica y el ID de nota
-    const { data } = await api.get(`${RESOURCE(taskId)}/${noteId}`);
+    const { data } = await api.get(`${RESOURCE(safeTaskId)}/${safeNoteId}`);
     // Valida la respuesta de la API contra el esquema de nota y devuelve los datos validados
     return validateApiRes(data, NoteSchema);
   } catch (err) {
@@ -67,8 +73,10 @@ export async function createNote(
   noteData: CreateNoteFormData,
 ): Promise<Note> {
   try {
+    // Validamos el ID de la tarea antes de realizar la solicitud para evitar problemas de seguridad
+    const safeTaskId = validateId(taskId);
     // Realiza la solicitud POST al recurso de notas para la tarea específica con los datos de la nueva nota
-    const { data } = await api.post(RESOURCE(taskId), noteData);
+    const { data } = await api.post(RESOURCE(safeTaskId), noteData);
     // Valida la respuesta de la API contra el esquema de nota y devuelve los datos validados
     return validateApiRes(data, NoteSchema);
   } catch (err) {
@@ -90,8 +98,11 @@ export async function updateNote(
   // Extraemos el ID de la nota del objeto de datos para usarlo en la URL, y el resto de los datos para enviarlos en el cuerpo de la solicitud
   const { id, ...updateData } = noteData;
   try {
+    // Validamos el ID de la tarea y el ID de la nota antes de realizar la solicitud para evitar problemas de seguridad
+    const safeTaskId = validateId(taskId);
+    const safeNoteId = validateId(id);
     // Realiza la solicitud PUT al recurso de notas para la tarea específica y el ID de nota con los datos de actualización
-    const { data } = await api.put(`${RESOURCE(taskId)}/${id}`, updateData);
+    const { data } = await api.put(`${RESOURCE(safeTaskId)}/${safeNoteId}`, updateData);
     // Valida la respuesta de la API contra el esquema de nota y devuelve los datos validados
     return validateApiRes(data, NoteSchema);
   } catch (err) {
@@ -110,8 +121,11 @@ export async function deleteNote(
   noteId: Note["id"],
 ): Promise<void> {
   try {
+    // Validamos el ID de la tarea y el ID de la nota antes de realizar la solicitud para evitar problemas de seguridad
+    const safeTaskId = validateId(taskId);
+    const safeNoteId = validateId(noteId);
     // Realiza la solicitud DELETE al recurso de notas para la tarea específica y el ID de nota
-    await api.delete(`${RESOURCE(taskId)}/${noteId}`);
+    await api.delete(`${RESOURCE(safeTaskId)}/${safeNoteId}`);
   } catch (err) {
     // Maneja cualquier error que ocurra durante la solicitud
     handleApiError(err);

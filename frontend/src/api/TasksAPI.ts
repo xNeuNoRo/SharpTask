@@ -1,6 +1,7 @@
 import { handleApiError } from "@/helpers/handleApiError";
 import { validateApiRes } from "@/helpers/validateApiRes";
 import { api } from "@/lib/axios";
+import { validateId } from "@/schemas";
 import {
   CreateTaskFormData,
   Task,
@@ -25,9 +26,10 @@ const RESOURCE = "/tasks";
  */
 export async function getTasks(status?: Task["status"]): Promise<Task[]> {
   try {
+    const safeStatus = status ? encodeURIComponent(status) : undefined;
     // Realiza la solicitud GET al recurso de tareas
     const { data } = await api.get(RESOURCE, {
-      params: status ? { status } : undefined,
+      params: safeStatus ? { status: safeStatus } : undefined,
     });
     // Valida la respuesta de la API contra el esquema de tareas y devuelve los datos validados
     return validateApiRes(data, TasksSchema);
@@ -44,8 +46,10 @@ export async function getTasks(status?: Task["status"]): Promise<Task[]> {
  */
 export async function getTaskById(id: Task["id"]): Promise<TaskDetail> {
   try {
+    // Validamos el ID antes de realizar la solicitud para evitar problemas de seguridad
+    const safeId = validateId(id);
     // Realiza la solicitud GET al recurso de tareas con el ID específico
-    const { data } = await api.get(`${RESOURCE}/${id}`);
+    const { data } = await api.get(`${RESOURCE}/${safeId}`);
     // Valida la respuesta de la API contra el esquema de tarea y devuelve los datos validados
     return validateApiRes(data, TaskDetailSchema);
   } catch (err) {
@@ -80,8 +84,10 @@ export async function updateTask(taskData: UpdateTaskFormData): Promise<Task> {
   // Extraemos el ID del objeto de datos de la tarea y preparamos los datos de actualización sin el ID
   const { id, ...updateData } = taskData;
   try {
+    // Validamos el ID antes de realizar la solicitud para evitar problemas de seguridad
+    const safeId = validateId(id);
     // Realiza la solicitud PUT al recurso de tareas con el ID específico y los datos de actualización
-    const { data } = await api.put(`${RESOURCE}/${id}`, updateData);
+    const { data } = await api.put(`${RESOURCE}/${safeId}`, updateData);
     // Valida la respuesta de la API contra el esquema de tarea y devuelve los datos validados
     return validateApiRes(data, TaskSchema);
   } catch (err) {
@@ -97,8 +103,10 @@ export async function updateTask(taskData: UpdateTaskFormData): Promise<Task> {
  */
 export async function deleteTask(id: Task["id"]): Promise<void> {
   try {
+    // Validamos el ID antes de realizar la solicitud para evitar problemas de seguridad
+    const safeId = validateId(id);
     // Realiza la solicitud DELETE al recurso de tareas con el ID específico
-    await api.delete(`${RESOURCE}/${id}`);
+    await api.delete(`${RESOURCE}/${safeId}`);
   } catch (err) {
     // Maneja cualquier error que ocurra durante la solicitud
     handleApiError(err);
@@ -116,9 +124,10 @@ export async function deleteTask(id: Task["id"]): Promise<void> {
  */
 export async function searchTask(keyword: string): Promise<Task[]> {
   try {
+    const safeKeyword = encodeURIComponent(keyword.trim());
     // Realiza la solicitud GET al recurso de tareas con el parámetro de búsqueda
     const { data } = await api.get(`${RESOURCE}/search`, {
-      params: { keyword },
+      params: { keyword: safeKeyword },
     });
     // Valida la respuesta de la API contra el esquema de tareas y devuelve los datos validados
     return validateApiRes(data, TasksSchema);
@@ -140,8 +149,13 @@ export async function updateTaskStatus(
   // Extraemos el ID del objeto de datos de la tarea y preparamos los datos de actualización sin el ID
   const { id, ...updateData } = taskData;
   try {
+    // Validamos el ID antes de realizar la solicitud para evitar problemas de seguridad
+    const safeId = validateId(id);
     // Realiza la solicitud PATCH al recurso de tareas con el ID específico y los datos de actualización del estado
-    const { data } = await api.patch(`${RESOURCE}/${id}/status`, updateData);
+    const { data } = await api.patch(
+      `${RESOURCE}/${safeId}/status`,
+      updateData,
+    );
     // Valida la respuesta de la API contra el esquema de tarea y devuelve los datos validados
     return validateApiRes(data, TaskSchema);
   } catch (err) {
@@ -157,8 +171,10 @@ export async function updateTaskStatus(
  */
 export async function completeTask(id: Task["id"]): Promise<Task> {
   try {
+    // Validamos el ID antes de realizar la solicitud para evitar problemas de seguridad
+    const safeId = validateId(id);
     // Realiza la solicitud PATCH al recurso de tareas con el ID específico para marcarla como completada
-    const { data } = await api.patch(`${RESOURCE}/${id}/complete`);
+    const { data } = await api.patch(`${RESOURCE}/${safeId}/complete`);
     // Valida la respuesta de la API contra el esquema de tarea y devuelve los datos validados
     return validateApiRes(data, TaskSchema);
   } catch (err) {
