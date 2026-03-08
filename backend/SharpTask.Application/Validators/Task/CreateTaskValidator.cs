@@ -21,6 +21,7 @@ public class CreateTaskValidator : TaskRequestBaseValidator<CreateTaskRequestDto
     {
         RuleFor(x => x.DueDate)
             .GreaterThanOrEqualTo(DateTime.UtcNow.Date)
+            .When(x => x.DueDate.HasValue)
             .WithMessage("La fecha límite no puede ser una fecha pasada");
     }
 }
