@@ -10,6 +10,7 @@ import { useTask } from "@/hooks/tasks/useQueries";
 import { useUpdateTask } from "@/hooks/tasks/useMutations";
 import { useQueryString } from "@/hooks/shared/useQueryString";
 import { useEffect } from "react";
+import LoadingTaskModal from "./LoadingTaskModal";
 
 export default function EditTaskModal() {
   // Hook para manejar la navegación y manipulación de URLs con query strings
@@ -32,16 +33,6 @@ export default function EditTaskModal() {
     formState: { errors },
   } = useForm<UpdateTaskFormData>({
     resolver: zodResolver(UpdateTaskSchema),
-    values:
-      task && taskId
-        ? {
-            id: taskId,
-            title: task.title,
-            description: task.description,
-            status: task.status,
-            dueDate: task.dueDate ? task.dueDate.split("T")[0] : "",
-          }
-        : undefined,
   });
 
   useEffect(() => {
@@ -64,6 +55,15 @@ export default function EditTaskModal() {
     router.push(createUrl({ action: null, taskId: null }), { scroll: false });
   };
 
+  // Utilizamos el hook useEffect para cerrar el modal automáticamente si ocurre
+  // un error al cargar la tarea mientras el modal está abierto.
+  useEffect(() => {
+    if (isError && show) {
+      closeModal();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isError, show]);
+
   // Función para manejar el envío del formulario, que llama a la mutación de actualización con los datos del formulario,
   // y en caso de éxito, cierra el modal.
   const handleUpdateTask = (formData: UpdateTaskFormData) => {
@@ -74,11 +74,12 @@ export default function EditTaskModal() {
     });
   };
 
-  // Si hay un error al obtener la tarea, cerramos el modal para evitar mostrar un estado inconsistente,
-  // esto puede ocurrir si el ID de la tarea no es válido o si hay un problema con la consulta.
-  if (isError) {
-    closeModal();
-    return null;
+  // Si ocurre un error al cargar la tarea, no renderizamos nada 
+  // El efecto se encargará de cerrar el modal automáticamente
+  if (isError) return null;
+
+  if (!task) {
+    return <LoadingTaskModal show={show} closeModal={closeModal} />;
   }
 
   return (

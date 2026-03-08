@@ -1,7 +1,6 @@
 "use client";
 
 import { CalendarDaysIcon, ClockIcon } from "@heroicons/react/20/solid";
-import { ArrowPathIcon } from "@heroicons/react/24/outline";
 import { useRouter } from "next/navigation";
 import { useEffect, type ChangeEvent } from "react";
 import Modal from "@/components/shared/Modal";
@@ -13,6 +12,7 @@ import { useUpdateTaskStatus } from "@/hooks/tasks/useMutations";
 import { useQueryString } from "@/hooks/shared/useQueryString";
 import { Task } from "@/schemas/task";
 import classNames from "@/helpers/classNames";
+import LoadingTaskModal from "./LoadingTaskModal";
 
 export default function TaskDetailsModal() {
   // Extraemos el ID de la tarea y la acción de los parámetros de búsqueda para determinar si el modal debe mostrarse
@@ -24,27 +24,27 @@ export default function TaskDetailsModal() {
   const taskId = searchParams.get("taskId");
   const show = action === "view-task" && !!taskId;
 
-  // Utilizamos el hook personalizado useTask para obtener los detalles de la tarea, 
+  // Utilizamos el hook personalizado useTask para obtener los detalles de la tarea,
   // pasando el ID de la tarea como argumento.
   const { data: task, isError } = useTask(taskId ?? undefined);
 
-  // Utilizamos el hook personalizado useUpdateTaskStatus para obtener la función mutate 
+  // Utilizamos el hook personalizado useUpdateTaskStatus para obtener la función mutate
   // que nos permitirá actualizar el estado de la tarea.
   const { mutate: updateTaskStatus } = useUpdateTaskStatus();
 
-  // Definimos la función closeModal que se encargará de cerrar el modal 
+  // Definimos la función closeModal que se encargará de cerrar el modal
   // al navegar a la URL sin los parámetros de acción y ID de tarea.
   const closeModal = () => {
     router.push(createUrl({ action: null, taskId: null }), { scroll: false });
   };
 
-  // Utilizamos el hook useEffect para cerrar el modal automáticamente si ocurre 
+  // Utilizamos el hook useEffect para cerrar el modal automáticamente si ocurre
   // un error al cargar la tarea mientras el modal está abierto.
   useEffect(() => {
     if (isError && show) {
       closeModal();
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isError, show]);
 
   // Definimos la función handleChange que se ejecutará cuando el usuario cambie el estado de la tarea
@@ -57,24 +57,12 @@ export default function TaskDetailsModal() {
     }
   };
 
-  // Si ocurre un error al cargar la tarea, no renderizamos nada 
+  // Si ocurre un error al cargar la tarea, no renderizamos nada
   // (podríamos mostrar un mensaje de error o redirigir, pero en este caso simplemente no mostramos el modal)
   if (isError) return null;
 
   if (!task) {
-    return (
-      <Modal title="Cargando detalles..." open={show} close={closeModal}>
-        <div className="flex flex-col items-center justify-center p-10 min-h-[30vh]">
-          <div className="relative flex items-center justify-center w-16 h-16 mb-4">
-            <div className="absolute inset-0 border-t-4 border-b-4 border-purple-500 rounded-full animate-spin"></div>
-            <ArrowPathIcon className="w-6 h-6 text-purple-400 animate-pulse" />
-          </div>
-          <p className="font-medium text-slate-500 animate-pulse">
-            Obteniendo información de la tarea...
-          </p>
-        </div>
-      </Modal>
-    );
+    return <LoadingTaskModal show={show} closeModal={closeModal} />;
   }
 
   return (
