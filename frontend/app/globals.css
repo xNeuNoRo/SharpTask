@@ -1,0 +1,6 @@
+@import "tailwindcss";
+@plugin "@tailwindcss/forms";
+
+@utility shadow-blur {
+  box-shadow: 0 0 6px 2px currentColor;
+}

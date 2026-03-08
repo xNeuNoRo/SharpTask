@@ -20,6 +20,12 @@ public abstract record TaskRequestBase
     public string? Description { get; init; }
 
     /// <summary>
+    /// Fecha de vencimiento de la tarea
+    /// </summary>
+    /// <example>2026-06-30T23:59:00Z</example>
+    public DateTime? DueDate { get; init; }
+
+    /// <summary>
     /// Estado de la tarea
     /// </summary>
     /// <example>Pending</example>

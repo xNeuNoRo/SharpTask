@@ -144,12 +144,10 @@ public class TasksController : BaseApiController
     [HttpPatch("{id:guid}/complete")]
     [ProducesResponseType(typeof(ApiResponse<TaskResponseDto>), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> Complete(Guid id)
     {
-        var task = await _commandService.UpdateTaskStatusAsync(
-            id,
-            new UpdateTaskStatusRequestDto { Status = TaskState.Completed }
-        );
+        var task = await _commandService.CompleteTaskAsync(id);
         return SuccessOrNotFound(
             task, // La task actualizada
             ErrorCodes.TaskNotFound, // El código de error específico para tarea no encontrada

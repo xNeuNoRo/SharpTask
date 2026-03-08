@@ -33,6 +33,13 @@ public interface ITaskCommandService
     Task<TaskResponseDto?> UpdateTaskStatusAsync(Guid id, UpdateTaskStatusRequestDto request);
 
     /// <summary>
+    /// Marca una tarea existente como completada en la base de datos por su ID.
+    /// </summary>
+    /// <param name="id">El identificador único de la tarea</param>
+    /// <returns>La tarea actualizada o null si no se encuentra</returns>
+    Task<TaskResponseDto?> CompleteTaskAsync(Guid id);
+
+    /// <summary>
     /// Elimina una tarea por su ID, eliminando también todas las notas asociadas a esa tarea.
     /// </summary>
     /// <param name="id">El identificador único de la tarea</param>
