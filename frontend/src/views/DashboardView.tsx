@@ -8,7 +8,7 @@ import { useSearchTasks, useTasks } from "@/hooks/tasks/useQueries";
 import { useQueryString } from "@/hooks/shared/useQueryString";
 import { Suspense, useCallback } from "react";
 import Link from "next/link";
-import { Task } from "@/schemas/task";
+import { TaskStatusEnum } from "@/schemas/task";
 import { useRouter } from "next/navigation";
 import { statusTranslations } from "@/locales/es";
 import { useUrlSearch } from "@/hooks/shared/useUrlSearch";
@@ -24,9 +24,12 @@ export default function DashboardView() {
     delay: 500,
   });
 
-  // Obtenemos el estado de filtro desde la URL (puede ser "pending", "in-progress", "completed" o undefined)
-  const statusFromUrl =
-    (searchParams.get("status") as Task["status"]) || undefined;
+  // Obtenemos el estado de filtro desde la URL, validándolo contra el enum de estados de tarea
+  const rawStatus = searchParams.get("status");
+  const statusResult = TaskStatusEnum.safeParse(rawStatus);
+
+  // Si el estado en la url no es valido, lo dejamos como undefined para seguir mostrando todas las tareas
+  const statusFromUrl = statusResult.success ? statusResult.data : undefined;
   const searchFromUrl = searchParams.get("search") || "";
 
   // Consultas para obtener tareas por estado y por búsqueda,
