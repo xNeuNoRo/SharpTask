@@ -25,7 +25,7 @@ public class TaskItem : BaseEntity
     public string? Description { get; set; }
 
     /// <summary>
-    /// Fecha de vencimiento de la tarea, es un campo requerido
+    /// Fecha de vencimiento de la tarea, es un campo opcional
     /// que indica la fecha límite para completar la tarea,
     /// </summary>
     /// <example>2026-06-30T23:59:00Z</example>
