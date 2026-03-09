@@ -12,20 +12,18 @@ type AddNoteFormProps = {
 };
 
 export default function AddNoteForm({ taskId }: Readonly<AddNoteFormProps>) {
-  // Valores iniciales para el formulario de creación de nota, con un campo de contenido vacío
-  const initialValues: CreateNoteFormData = {
-    content: "",
-  };
-
   // Configuramos el formulario usando React Hook Form, con los valores iniciales definidos anteriormente
   const {
     register,
     handleSubmit,
-    reset,
     formState: { errors },
+    resetField,
+    clearErrors,
   } = useForm<CreateNoteFormData>({
     resolver: zodResolver(CreateNoteSchema),
-    defaultValues: initialValues,
+    defaultValues: {
+      content: "",
+    },
   });
 
   // Hook para manejar la mutación de creación de nota, que se ejecutará al enviar el formulario
@@ -36,7 +34,8 @@ export default function AddNoteForm({ taskId }: Readonly<AddNoteFormProps>) {
   const handleAddNote = (formData: CreateNoteFormData) => {
     createNote(formData, {
       onSuccess: () => {
-        reset();
+        resetField("content", { defaultValue: "" });
+        clearErrors("content");
       },
     });
   };
