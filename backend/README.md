@@ -72,10 +72,8 @@ Configura tu archivo `/frontend/.env.local`:
 
 ### Opción A: Usando `mise` (Recomendado) ✨
 ```bash
-# 1. Instalar dependencias y preparar el entorno
-mise run install
-
-# 2. Ejecutar todo el sistema (Frontend + Backend) en paralelo
+# 1. Ejecutar todo el sistema (Frontend + Backend) en paralelo
+# Esto instala todo automaticamente tambien
 mise run dev
 ```
 
